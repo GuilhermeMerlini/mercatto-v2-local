@@ -15,3 +15,7 @@ class ConflictError(DomainError):
 
 class InsufficientStockError(DomainError):
     """Estoque insuficiente para a operação (HTTP 409)."""
+
+
+class AuthenticationError(DomainError):
+    """Credenciais inválidas (HTTP 401)."""
