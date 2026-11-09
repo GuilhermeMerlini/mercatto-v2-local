@@ -1,0 +1,9 @@
+__pycache__/
+.venv/
+*.db
+.env
+node_modules/
+dist/
+.pytest_cache/
+.ruff_cache/
+docs/results.jsonl
