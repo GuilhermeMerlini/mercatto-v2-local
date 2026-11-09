@@ -1,0 +1,10 @@
+line-length = 110
+
+[lint]
+select = ["E", "F", "I"]
+
+[lint.isort]
+known-first-party = ["app", "tests"]
+
+[lint.per-file-ignores]
+"tests/*" = ["E501"]  # testes são escritos por humanos; o limite vale para o código do modelo
