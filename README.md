@@ -126,14 +126,6 @@ OLLAMA_CONTEXT_LENGTH=32768 ollama serve
 
 Confira com `ollama show <modelo>`.
 
-### Rodando no servidor da faculdade
-
-1. Conectar na máquina pelo VS Code (Remote SSH) e clonar o repositório lá.
-2. Rodar o harness **dentro do `tmux`**. Uma issue pode levar vários minutos, e se a conexão
-   cair, o processo morre junto.
-3. Para dar push de lá, usar um token do GitHub *fine-grained*, restrito a este repositório. A
-   máquina é compartilhada.
-
 ---
 
 ## Resolvendo uma issue
