@@ -128,7 +128,9 @@ def _reset_payment_gateway():
         from app.modules.payments import service as payments
     except ImportError:
         return
-    payments.set_gateway(payments.MockPaymentGateway("none"))
+    # O arquivo existe vazio no esqueleto: só reseta depois que a issue 12 o implementar.
+    if hasattr(payments, "set_gateway") and hasattr(payments, "MockPaymentGateway"):
+        payments.set_gateway(payments.MockPaymentGateway("none"))
 
 
 @pytest.fixture(name="sql_log")
