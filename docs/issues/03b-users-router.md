@@ -12,42 +12,70 @@ max_iters: 4
 Os testes estão em `backend/tests/test_issue_03_users_register_login.py` e **não podem ser
 alterados**. Esta parte cobre os testes HTTP (`-k "not service and not table"`).
 
-O `service.py` de users **já está pronto** (parte 1, `03a`); a API dele aparece em
-"API PÚBLICA DAS DEPENDÊNCIAS". Use essas funções como estão: **não reescreva `service.py` nem
-`models.py`** e não altere nada em `backend/app/core/`.
+O `service.py` e o `models.py` de users **já estão prontos** (parte 1, `03a`); a API do service
+aparece em "API PÚBLICA DAS DEPENDÊNCIAS". Use essas funções como estão: **não reescreva
+`service.py` nem `models.py`** e não altere nada em `backend/app/core/`.
 
 Altere somente `backend/app/modules/users/schemas.py`, `backend/app/modules/users/router.py` e
 `backend/app/main.py`.
 
+## main.py
+
+Mantenha o `main.py` como está e acrescente **apenas** estas duas linhas (o import junto dos
+outros imports, o `include_router` depois da criação do `app`):
+
+```python
+from app.modules.users.router import router as users_router
+
+app.include_router(users_router)
+```
+
+Não registre routers de outros módulos (`catalog`, `cart`, `orders`, ...): eles ainda não
+existem e o import quebra a aplicação. Não use `from app.modules import users` + `users.router`:
+importar o pacote não carrega o submódulo `router`.
+
 ## schemas.py
 
-Modelos Pydantic de entrada e saída do HTTP (o `UserView` **não** fica aqui, ele é do service):
+Modelos Pydantic de entrada e saída do HTTP. O `UserView` **não** fica aqui (ele é do service)
+e o `UserRole` **não** é redefinido aqui:
 
-- `RegisterIn`: `name` (não vazio), `email` (`EmailStr`), `password` (8 a 72 caracteres),
-  `role` (`Literal["BUYER", "SELLER"]`, padrão `"BUYER"`). Entrada inválida ou campo faltando
-  já vira **422** pelo próprio FastAPI.
-- `LoginIn`: `email`, `password`.
-- `UserOut`: `id, name, email, role, created_at` (exatamente esses campos).
-- `LoginOut`: os campos de `UserOut` + `access_token`, `token_type`, `expires_at`.
+```python
+from typing import Literal
+from pydantic import BaseModel, EmailStr, Field
+```
+
+- `RegisterIn`:
+  - `name: str = Field(min_length=1)`
+  - `email: EmailStr`
+  - `password: str = Field(min_length=8, max_length=72)`
+  - `role: Literal["BUYER", "SELLER"] = "BUYER"`
+- `LoginIn`: `email: EmailStr`, `password: str`.
+- `UserOut`: `id: int`, `name: str`, `email: str`, `role: str`, `created_at: datetime`
+  (exatamente esses campos).
+- `LoginOut(UserOut)`: + `access_token: str`, `token_type: str`, `expires_at: datetime`.
+
+Entrada inválida ou campo faltando vira **422** sozinho, pela validação do FastAPI.
 
 ## router.py
 
-`router = APIRouter(prefix="/api/users", tags=["users"])`, registrado em `main.py` com
-`app.include_router(...)`.
+`router = APIRouter(prefix="/api/users", tags=["users"])`.
 
 A sessão do banco vem de `get_session` (`core/db.py`) via `Depends`, e é passada como
 **primeiro argumento** das funções do service:
 `def register_user(body: RegisterIn, session: Session = Depends(get_session))`.
 
-- `POST /register` `{name, email, password, role?}` → **201** com `UserOut`.
-  Email duplicado → **409**.
-- `POST /login` `{email, password}` → **200**
+- `POST /register` `{name, email, password, role?}` → **201** com `UserOut`. O status vai no
+  decorator: `@router.post("/register", response_model=UserOut, status_code=201)`.
+  Email duplicado → **409** (o service já lança `ConflictError`).
+- `POST /login` `{email, password}` → **200** com `LoginOut`:
   `{id, name, email, role, created_at, access_token, token_type: "bearer", expires_at}`.
-  Credenciais erradas → **401**. O token é criado com
-  `token, expires_at = create_access_token(user.id, user.role)`.
+  O token é criado com `token, expires_at = create_access_token(user.id, user.role)`.
+  Credenciais erradas → **401** (o service já lança `AuthenticationError`).
 
 ## Regras
 
-- Não use `try/except` nem `HTTPException` no router: os erros do service (`ConflictError`,
-  `AuthenticationError`, ...) sobem sozinhos e o handler de `main.py` converte em 409/401.
+- **Sem `try/except`, sem `JSONResponse` e sem `HTTPException` no router.** Os erros do service
+  (`ConflictError`, `AuthenticationError`, ...) sobem sozinhos e o handler que já existe em
+  `main.py` converte em 409/401 com o corpo certo. Cada endpoint é só: chamar o service e
+  devolver o resultado.
 - Senha nunca aparece em resposta.
