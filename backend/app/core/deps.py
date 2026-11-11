@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi import Depends, Security
-from app.core import config, errors
+from fastapi import Depends
 from app.core.errors import AuthenticationError, ForbiddenError
 from app.core.security import decode_access_token
 
