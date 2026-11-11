@@ -1,20 +1,17 @@
-from fastapi import FastAPI, status # linha editada manualmente (removido HTTPException sem uso)
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from typing import Any
 from app.core import config, db, errors
-# linha editada manualmente: removido "from app.modules import registry" (sem uso; init_db já importa)
+from app.modules.users.router import router as users_router
 
-
-@asynccontextmanager # linha editada manualmente (lifespan movido para antes do app)
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     db.init_db()
     yield
 
-
-app = FastAPI(title="Mercatto v2", lifespan=lifespan) # linha editada manualmente
-
+app = FastAPI(title="Mercatto v2", lifespan=lifespan)
 
 @app.exception_handler(errors.DomainError)
 def domain_error_exception_handler(_: Any, exc: errors.DomainError) -> JSONResponse:
@@ -27,11 +24,9 @@ def domain_error_exception_handler(_: Any, exc: errors.DomainError) -> JSONRespo
         headers=headers,
     )
 
-
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,4 +34,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# linha editada manualmente: removido "app.lifespan = lifespan" (não tinha efeito)
+
+app.include_router(users_router)
