@@ -6,6 +6,7 @@ from sqlalchemy.types import TypeDecorator
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.core import config
+# linha editada manualmente: removido "from app.modules import registry" do topo (import circular)
 
 
 class UTCDateTime(TypeDecorator):
@@ -32,6 +33,7 @@ engine = create_engine(
 
 
 def init_db() -> None:
+    from app.modules import registry
     SQLModel.metadata.create_all(engine)
 
 
