@@ -1,10 +1,13 @@
+from contextlib import asynccontextmanager
+from typing import Any
+
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-from typing import Any
+
 from app.core import config, db, errors
 from app.modules.users.router import router as users_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

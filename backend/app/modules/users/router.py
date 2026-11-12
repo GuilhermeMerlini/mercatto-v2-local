@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, status
-from fastapi.responses import JSONResponse
-from app.core.db import get_session
-from app.modules.users.service import register, authenticate
-from app.modules.users.schemas import RegisterIn, LoginIn, UserOut, LoginOut
 from sqlalchemy.orm import Session
+
+from app.core.db import get_session
 from app.core.security import create_access_token
+from app.modules.users.schemas import LoginIn, LoginOut, RegisterIn, UserOut
+from app.modules.users.service import authenticate, register
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
