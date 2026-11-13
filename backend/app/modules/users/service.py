@@ -54,3 +54,45 @@ def find_user(session: Session, user_id: int) -> Optional[UserView]:
     if not user:
         return None
     return UserView(id=user.id, name=user.name, email=user.email, role=user.role, created_at=user.created_at)
+
+
+def update_profile(
+    session: Session, user_id: int, name: str | None = None, email: str | None = None
+) -> UserView:
+    user = session.get(User, user_id)
+    if not user:
+        raise NotFoundError("User not found")
+    
+    if name is not None:
+        if not name.strip():
+            raise InvalidInputError("Name cannot be empty or contain only whitespace")
+        user.name = name
+    
+    if email is not None:
+        email = email.strip().lower()
+        existing_user = session.query(User).filter(User.email == email).first()
+        if existing_user and existing_user.id != user_id:
+            raise ConflictError("Email already registered")
+        user.email = email
+    
+    session.commit()
+    session.refresh(user)
+    return UserView(id=user.id, name=user.name, email=user.email, role=user.role, created_at=user.created_at)
+
+
+def change_password(session: Session, user_id: int, current_password: str, new_password: str) -> None:
+    user = session.get(User, user_id)
+    if not user:
+        raise NotFoundError("User not found")
+    
+    if not verify_password(current_password, user.hashed_password):
+        raise InvalidInputError("Current password is incorrect")
+    
+    if current_password == new_password:
+        raise InvalidInputError("New password must be different from current password")
+    
+    if len(new_password.encode("utf-8")) < 8 or len(new_password.encode("utf-8")) > 72:
+        raise InvalidInputError("New password must be between 8 and 72 characters")
+    
+    user.hashed_password = hash_password(new_password)
+    session.commit()

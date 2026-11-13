@@ -2,9 +2,17 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_session
+from app.core.deps import AuthUser, get_current_user
 from app.core.security import create_access_token
-from app.modules.users.schemas import LoginIn, LoginOut, RegisterIn, UserOut
-from app.modules.users.service import authenticate, register
+from app.modules.users.schemas import (
+    LoginIn,
+    LoginOut,
+    PasswordChangeIn,
+    ProfileUpdateIn,
+    RegisterIn,
+    UserOut,
+)
+from app.modules.users.service import authenticate, change_password, get_user, register, update_profile
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -26,3 +34,24 @@ def login_user(body: LoginIn, session: Session = Depends(get_session)):
         token_type="bearer",
         expires_at=expires_at
     )
+
+@router.get("/me", response_model=UserOut)
+def get_me(auth: AuthUser = Depends(get_current_user),
+           session: Session = Depends(get_session)):
+    return get_user(session, auth.id)
+
+@router.patch("/me", response_model=UserOut)
+def update_me(body: ProfileUpdateIn, auth: AuthUser = Depends(get_current_user),
+              session: Session = Depends(get_session)):
+    return update_profile(session, auth.id, name=body.name, email=body.email)
+
+@router.put("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+def change_password_endpoint(body: PasswordChangeIn, auth: AuthUser = Depends(get_current_user),
+                            session: Session = Depends(get_session)):
+    change_password(session, auth.id, body.current_password, body.new_password)
+
+@router.get("/{user_id}", response_model=UserOut)
+def get_user_by_id(user_id: int, auth: AuthUser = Depends(get_current_user),
+                   session: Session = Depends(get_session)):
+    auth.require_owner(user_id)
+    return get_user(session, user_id)
