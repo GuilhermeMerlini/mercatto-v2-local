@@ -161,6 +161,9 @@ def apply_files(reply: str):
 
 
 def run_tests(cmd):
+    # para no 1º erro, traceback curto e sem warnings: assim o motivo da falha cabe nos 4000 chars
+    if "pytest" in cmd:
+        cmd += " -x --tb=short -p no:warnings"
     r = subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, text=True, timeout=300)
     return r.returncode == 0, (r.stdout + r.stderr)[-4000:]  # só o fim do log
 
