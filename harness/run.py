@@ -20,7 +20,7 @@ from signatures import signatures
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_MODEL = os.getenv("LLM_MODEL", "qwen3:8b")
-THINK_RE = re.compile(r"<think>.*?</think>", re.S)
+THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 client = OpenAI(
     base_url=os.getenv("LLM_BASE_URL", "http://localhost:11434/v1"),
     api_key=os.getenv("LLM_API_KEY", "local"),
@@ -34,7 +34,7 @@ sem explicações:
 conteúdo completo
 ```"""
 
-HEADER_RE = re.compile(r"^### FILE: (.+?)[ \t]*$", re.M)
+HEADER_RE = re.compile(r"^### FILE: (.+?)[ \t]*$", re.MULTILINE)
 
 
 def parse_files(reply: str):
