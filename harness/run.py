@@ -3,6 +3,8 @@
 Uso: python harness/run.py 3                      (issue 03 em docs/issues/)
      python harness/run.py 3 --model qwen3.6:35b --continue
      python harness/run.py docs/issues/03-users-register-login.md
+     python harness/run.py 1 --register-ci             (só registra os testes no CI, sem chamar o modelo)
+Quando a issue passa, os arquivos de teste dela vão para .github/ci-tests.txt.
 Config por env: LLM_BASE_URL, LLM_MODEL (padrão), LLM_API_KEY, LLM_TEMPERATURE
 """
 import argparse
@@ -168,6 +170,39 @@ def run_tests(cmd):
     return r.returncode == 0, (r.stdout + r.stderr)[-4000:]  # só o fim do log
 
 
+CI_TESTS = ROOT / ".github/ci-tests.txt"
+TEST_FILE_RE = re.compile(r"\btests/test_\w+\.py\b")
+
+
+def register_ci_tests(meta) -> None:
+    """Acrescenta em .github/ci-tests.txt os arquivos de teste do backend desta issue que passam inteiros.
+
+    Candidatos: os arquivos citados no test_cmd + o tests/test_issue_NN_*.py da própria issue.
+    Cada um é rodado sozinho e sem filtro: issues que testam só parte de um arquivo (03a/03b, com -k)
+    não registram o arquivo enquanto a outra parte ainda falha.
+    """
+    candidates = set(TEST_FILE_RE.findall(meta["test_cmd"]))
+    num = re.match(r"\d+", meta["id"])
+    if num:
+        candidates |= {p.relative_to(ROOT / "backend").as_posix()
+                       for p in (ROOT / "backend/tests").glob(f"test_issue_{int(num.group()):02d}_*.py")}
+    if not candidates:
+        return
+    listed = {line.strip() for line in CI_TESTS.read_text().splitlines()} if CI_TESTS.exists() else set()
+    added = []
+    for rel in sorted(candidates - listed):
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:warnings", rel],
+                           cwd=ROOT / "backend", capture_output=True, text=True, timeout=300, check=False)
+        if r.returncode == 0:
+            added.append(rel)
+        else:
+            print(f"[{meta['id']}] CI: {rel} ainda não passa inteiro; não registrado.", flush=True)
+    if added:
+        with open(CI_TESTS, "a") as f:
+            f.writelines(rel + "\n" for rel in added)
+        print(f"[{meta['id']}] CI: registrado em .github/ci-tests.txt: {added}", flush=True)
+
+
 def run_issue(issue_path: Path, model: str, resume: bool = False):
     meta, body = load_issue(issue_path)
     prompt = build_prompt(meta, body)
@@ -175,6 +210,7 @@ def run_issue(issue_path: Path, model: str, resume: bool = False):
         ok, output = run_tests(meta["test_cmd"])
         if ok:
             print(f"[{meta['id']}] os testes já passam; nada a continuar.")
+            register_ci_tests(meta)
             return
         work = current_work_files(exclude=meta.get("context_files", []))
         print(f"[{meta['id']}] retomando com {len(work)} arquivo(s) existente(s): {work}", flush=True)
@@ -228,6 +264,17 @@ def run_issue(issue_path: Path, model: str, resume: bool = False):
     with open(ROOT / "docs/results.jsonl", "a") as f:
         f.write(json.dumps(log) + "\n")
     print(log)
+    if log["passed"]:
+        register_ci_tests(meta)
+
+
+def register_only(issue_path: Path) -> None:
+    """Para issues corrigidas à mão: confere o test_cmd e registra os testes no CI, sem chamar o modelo."""
+    meta, _ = load_issue(issue_path)
+    ok, output = run_tests(meta["test_cmd"])
+    if not ok:
+        sys.exit(f"[{meta['id']}] os testes não passam; nada registrado.\n{output}")
+    register_ci_tests(meta)
 
 
 if __name__ == "__main__":
@@ -236,5 +283,11 @@ if __name__ == "__main__":
     ap.add_argument("--model", default=DEFAULT_MODEL, help="ex.: qwen3:8b ou qwen3.6:35b")
     ap.add_argument("--continue", dest="resume", action="store_true",
                     help="continua a partir dos arquivos e do erro da tentativa anterior (sem reset)")
+    ap.add_argument("--register-ci", action="store_true",
+                    help="não chama o modelo: só confere os testes e registra a issue em "
+                         ".github/ci-tests.txt (para issues corrigidas à mão)")
     args = ap.parse_args()
-    run_issue(resolve_issue(args.issue), args.model, args.resume)
+    if args.register_ci:
+        register_only(resolve_issue(args.issue))
+    else:
+        run_issue(resolve_issue(args.issue), args.model, args.resume)

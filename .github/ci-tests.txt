@@ -1,5 +1,6 @@
 # Testes que o CI roda (caminhos relativos a backend/).
-# Cada PR de issue acrescenta aqui o arquivo de teste da própria issue.
+# O harness acrescenta os arquivos quando a issue passa; para issues corrigidas à mão, use
+# `python harness/run.py N --register-ci`.
 tests/test_health.py
 tests/test_issue_01_core_auth.py
 tests/test_issue_02_app_wiring.py
