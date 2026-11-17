@@ -162,12 +162,29 @@ def apply_files(reply: str):
     return written
 
 
-def run_tests(cmd):
-    # para no 1º erro, traceback curto e sem warnings: assim o motivo da falha cabe nos 4000 chars
+SUMMARY_MARK = "short test summary info"
+
+
+def run_tests(cmd, budget=6000):
+    """Roda os testes e devolve (passou, saída limitada a ~budget chars).
+
+    No pytest, mostra até 8 falhas (não só a 1ª) com traceback curto e sem warnings, e `-rf` lista
+    TODAS as falhas no resumo final. Se a saída passar do budget, o resumo é mantido inteiro e
+    o resto do espaço vai para os tracebacks do início (as primeiras falhas).
+    """
     if "pytest" in cmd:
-        cmd += " -x --tb=short -p no:warnings"
+        cmd += " --maxfail=8 --tb=short -p no:warnings -rf"
     r = subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, text=True, timeout=300)
-    return r.returncode == 0, (r.stdout + r.stderr)[-4000:]  # só o fim do log
+    out = r.stdout + r.stderr
+    if len(out) > budget:
+        idx = out.rfind(SUMMARY_MARK)
+        if idx == -1:  # sem resumo do pytest (erro de coleta, outro comando): fica o fim do log
+            out = out[-budget:]
+        else:
+            line_start = out.rfind("\n", 0, idx) + 1  # inclui a linha "=== short test summary ==="
+            head, summary = out[:line_start], out[line_start:]
+            out = head[: max(budget - len(summary), 0)] + "\n[... saída cortada ...]\n" + summary
+    return r.returncode == 0, out
 
 
 CI_TESTS = ROOT / ".github/ci-tests.txt"
