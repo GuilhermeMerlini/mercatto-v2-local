@@ -7,3 +7,4 @@ tests/test_issue_02_app_wiring.py
 tests/test_issue_03_users_register_login.py
 tests/test_issue_04_users_profile.py
 tests/test_issue_05_catalog_crud.py
+tests/test_issue_06_catalog_read.py
