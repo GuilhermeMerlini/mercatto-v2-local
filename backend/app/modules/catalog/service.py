@@ -2,10 +2,10 @@ from dataclasses import asdict, dataclass, fields, replace
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
-from app.core.errors import ForbiddenError, InvalidInputError, NotFoundError
+from app.core.errors import ForbiddenError, InsufficientStockError, InvalidInputError, NotFoundError
 from app.modules.catalog.models import Product
 
 
@@ -161,3 +161,46 @@ def filter_products(
     if min_rating is not None:
         stmt = stmt.where(Product.average_rating >= min_rating)
     return [_to_view(p) for p in session.execute(stmt).scalars().all()]
+
+
+def decrease_stock(session: Session, product_id: int, qty: int) -> None:
+    if qty <= 0:
+        raise InvalidInputError("Quantity must be greater than zero")
+    result = session.execute(
+        update(Product)
+        .where(Product.id == product_id, Product.stock >= qty)
+        .values(stock=Product.stock - qty)
+    )
+    session.commit()
+    if result.rowcount == 0:
+        product = session.get(Product, product_id)
+        if not product:
+            raise NotFoundError("Product not found")
+        raise InsufficientStockError("Not enough stock")
+
+
+def increase_stock(session: Session, product_id: int, qty: int) -> None:
+    if qty <= 0:
+        raise InvalidInputError("Quantity must be greater than zero")
+    result = session.execute(
+        update(Product)
+        .where(Product.id == product_id)
+        .values(stock=Product.stock + qty)
+    )
+    session.commit()
+    if result.rowcount == 0:
+        raise NotFoundError("Product not found")
+
+
+def update_rating(session: Session, product_id: int, average_rating: float, review_count: int) -> None:
+    result = session.execute(
+        update(Product)
+        .where(Product.id == product_id)
+        .values(
+            average_rating=round(average_rating, 2),
+            review_count=review_count
+        )
+    )
+    session.commit()
+    if result.rowcount == 0:
+        raise NotFoundError("Product not found")
