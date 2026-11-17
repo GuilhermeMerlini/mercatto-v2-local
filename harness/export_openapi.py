@@ -10,6 +10,6 @@ from pathlib import Path
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
 
-from app.main import app  # noqa: E402
+from app.main import app
 
 print(json.dumps(app.openapi(), indent=2, ensure_ascii=False))

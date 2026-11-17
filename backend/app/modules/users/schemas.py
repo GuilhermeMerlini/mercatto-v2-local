@@ -25,3 +25,11 @@ class LoginOut(UserOut):
     access_token: str
     token_type: str
     expires_at: datetime
+
+class ProfileUpdateIn(BaseModel):
+    name: str | None = Field(default=None, min_length=1)
+    email: EmailStr | None = None
+
+class PasswordChangeIn(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=72)

@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from app.core import config, clock
+
+from app.core import clock, config
 from app.core.errors import AuthenticationError, InvalidInputError
 
 BCRYPT_MAX_BYTES = 72

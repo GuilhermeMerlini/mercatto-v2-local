@@ -6,6 +6,7 @@ from sqlalchemy.types import TypeDecorator
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.core import config
+
 # linha editada manualmente: removido "from app.modules import registry" do topo (import circular)
 
 
@@ -33,7 +34,7 @@ engine = create_engine(
 
 
 def init_db() -> None:
-    from app.modules import registry
+    from app.modules import registry  # noqa: F401  (registra as tabelas no metadata)
     SQLModel.metadata.create_all(engine)
 
 

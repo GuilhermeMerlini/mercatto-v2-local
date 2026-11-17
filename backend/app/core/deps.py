@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
 from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from app.core.errors import AuthenticationError, ForbiddenError
 from app.core.security import decode_access_token
+
 
 @dataclass(frozen=True)
 class AuthUser:
@@ -18,7 +21,9 @@ class AuthUser:
         if self.id != owner_id:
             raise ForbiddenError("User is not the owner")
 
-def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))) -> AuthUser:
+def get_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False)),
+) -> AuthUser:
     if not credentials:
         raise AuthenticationError("Missing credentials")
     try:
