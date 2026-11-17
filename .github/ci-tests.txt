@@ -1,0 +1,7 @@
+# Testes que o CI roda (caminhos relativos a backend/).
+# Cada PR de issue acrescenta aqui o arquivo de teste da própria issue.
+tests/test_health.py
+tests/test_issue_01_core_auth.py
+tests/test_issue_02_app_wiring.py
+tests/test_issue_03_users_register_login.py
+tests/test_issue_04_users_profile.py
