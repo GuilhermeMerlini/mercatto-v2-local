@@ -84,6 +84,32 @@ def get_cart(session: Session, user_id: int) -> CartView:
     )
 
 
+def save_for_later(session: Session, user_id: int, product_id: int) -> CartView:
+    cart_item = _get_cart_item(session, user_id, product_id)
+    if not cart_item:
+        raise NotFoundError("Item not found in cart")
+
+    if not cart_item.saved_for_later:
+        cart_item.saved_for_later = True
+        cart_item.updated_at = utcnow()
+        session.commit()
+
+    return get_cart(session, user_id)
+
+
+def move_to_cart(session: Session, user_id: int, product_id: int) -> CartView:
+    cart_item = _get_cart_item(session, user_id, product_id)
+    if not cart_item:
+        raise NotFoundError("Item not found in cart")
+
+    if cart_item.saved_for_later:
+        cart_item.saved_for_later = False
+        cart_item.updated_at = utcnow()
+        session.commit()
+
+    return get_cart(session, user_id)
+
+
 def add_item(session: Session, user_id: int, product_id: int, quantity: int) -> CartView:
     if quantity < 1:
         raise InvalidInputError("Quantity must be at least 1")

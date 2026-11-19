@@ -61,3 +61,25 @@ def remove_item(
 ):
     auth.require_owner(user_id)
     return service.remove_item(session, user_id, product_id)
+
+
+@router.post("/{user_id}/items/{product_id}/save-for-later", response_model=service.CartView)
+def save_for_later(
+    user_id: int,
+    product_id: int,
+    auth: AuthUser = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    auth.require_owner(user_id)
+    return service.save_for_later(session, user_id, product_id)
+
+
+@router.post("/{user_id}/items/{product_id}/move-to-cart", response_model=service.CartView)
+def move_to_cart(
+    user_id: int,
+    product_id: int,
+    auth: AuthUser = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    auth.require_owner(user_id)
+    return service.move_to_cart(session, user_id, product_id)
