@@ -1,7 +1,6 @@
-import unicodedata
 import re
-from typing import List, Set, Optional, Tuple
-from dataclasses import dataclass
+import unicodedata
+from typing import List, Optional, Set
 
 
 def normalize(text: str) -> str:
@@ -22,8 +21,8 @@ def tokenize(text: str) -> List[str]:
 
 def query_terms(query: str) -> List[str]:
     stop_words = {
-        'a', 'an', 'the', 'of', 'for', 'and', 'or', 'with', 'de', 'da', 'do', 'das', 'dos', 'e', 'em', 'para', 'com',
-        'um', 'uma'
+        'a', 'an', 'the', 'of', 'for', 'and', 'or', 'with',
+        'de', 'da', 'do', 'das', 'dos', 'e', 'em', 'para', 'com', 'um', 'uma',
     }
     tokens = tokenize(query)
     return [t for t in tokens if t not in stop_words]
