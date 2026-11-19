@@ -35,6 +35,11 @@ Módulos: users, catalog, search, cart, orders, payments, reviews, sellers.
 3. Referência entre módulos é por id (int), nunca `relationship` do ORM.
 4. `service.py` não importa FastAPI. Recebe `session: Session` como 1º argumento, faz
    `commit` e devolve dataclasses (`@dataclass(frozen=True)`), não objetos do ORM.
+   O `frozen` vale só para essas dataclasses: os models (`SQLModel, table=True`) não usam
+   `frozen`, `model_config` nem `class Config`, porque o service altera e grava esses objetos.
+   Consultas usam o `select` do `sqlalchemy` com `session.execute(stmt).scalars()` (`.all()`,
+   `.first()`, `.one_or_none()`); não use `session.exec`, que com esse `select` devolve linhas,
+   não objetos.
 5. Erros de negócio: o service lança exceções de `app/core/errors.py`
    (`NotFoundError`, `ConflictError`, `AuthenticationError`, `ForbiddenError`,
    `InvalidInputError`, `InsufficientStockError`). O handler global em `main.py` as traduz
