@@ -87,6 +87,13 @@ def test_no_correction_when_nothing_close(client, catalog):
     assert r.json()["corrected_query"] is None
 
 
+def test_no_correction_when_corrected_query_finds_nothing(client, catalog):
+    # "camara" vira "camera", mas "gamer" não casa com nada: sugerir "camera gamer" seria enganoso
+    r = client.get(URL, params={"q": "camara gamer"})
+    assert ids(r) == []
+    assert r.json()["corrected_query"] is None
+
+
 def test_filters(client, catalog):
     assert set(ids(client.get(URL, params={"category": "Eletrônicos"}))) == {
         catalog["notebook"]["id"], catalog["mouse"]["id"], catalog["camera"]["id"]}

@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.core import config, db, errors
 from app.modules.catalog.router import router as catalog_router
+from app.modules.search.router import router as search_router
 from app.modules.users.router import router as users_router
 
 
@@ -41,3 +42,4 @@ app.add_middleware(
 
 app.include_router(users_router)
 app.include_router(catalog_router)
+app.include_router(search_router)

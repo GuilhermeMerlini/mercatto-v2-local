@@ -9,3 +9,5 @@ tests/test_issue_04_users_profile.py
 tests/test_issue_05_catalog_crud.py
 tests/test_issue_06_catalog_read.py
 tests/test_issue_07_catalog_stock.py
+tests/test_issue_08_search_ranker.py
+tests/test_issue_09_search_service.py
