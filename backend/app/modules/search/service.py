@@ -4,8 +4,8 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.core.errors import InvalidInputError
-from app.modules.catalog.service import filter_products, ProductView
-from app.modules.search.ranker import query_terms, correct_terms, vocabulary, rank
+from app.modules.catalog.service import ProductView, filter_products
+from app.modules.search.ranker import correct_terms, query_terms, rank, vocabulary
 
 
 @dataclass(frozen=True)
