@@ -3,7 +3,7 @@ id: 10-cart-items
 title: "cart: carrinho e itens"
 depends: [06-catalog-read]
 provides: [backend/app/modules/cart/service.py]
-context_files: [backend/app/main.py, backend/app/modules/registry.py, backend/app/core/db.py, backend/app/core/errors.py, backend/app/core/clock.py, backend/app/core/deps.py, backend/tests/conftest.py, backend/tests/test_issue_10_cart_items.py]
+context_files: [backend/app/main.py, backend/app/modules/registry.py, backend/app/core/db.py, backend/app/core/errors.py, backend/app/core/clock.py, backend/app/core/deps.py, backend/app/modules/catalog/router.py, backend/tests/conftest.py, backend/tests/test_issue_10_cart_items.py]
 test_cmd: cd backend && python -m pytest tests/test_issue_10_cart_items.py -q
 max_iters: 4
 ---
@@ -41,6 +41,10 @@ omitido da view.
 
 **router.py**: registrar em `main.py` com o prefixo `/api/cart`. Todas as rotas exigem Bearer, e
 `user_id` precisa ser o do token (`auth.require_owner(user_id)`; senão **403**).
+Cada rota recebe `auth: AuthUser = Depends(get_current_user)` e
+`session: Session = Depends(get_session)`, e passa `session` como 1º argumento para o service,
+como no router do catalog: `service.get_cart(session, user_id)`. Os corpos das requisições
+são schemas em `schemas.py`.
 
 - `GET /{user_id}` → **200** com o carrinho
 - `DELETE /{user_id}` → **200** com o carrinho vazio
