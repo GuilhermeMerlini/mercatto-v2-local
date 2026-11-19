@@ -1,4 +1,5 @@
 import ast
+import threading
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -124,6 +125,17 @@ def test_edit_distance(a, b, d):
     assert ranker.edit_distance(a, b) == d
 
 
+def test_edit_distance_is_polynomial():
+    # Uma recursão sem memoização leva minutos aqui; a versão com programação dinâmica, microssegundos.
+    a, b = "abcdefghijklmnopqrstuvwxy", "zyxwvutsrqponmlkjihgfedcb"
+    result = []
+    worker = threading.Thread(target=lambda: result.append(ranker.edit_distance(a, b)), daemon=True)
+    worker.start()
+    worker.join(timeout=2)
+    assert not worker.is_alive(), "edit_distance é exponencial: use programação dinâmica"
+    assert result == [25]
+
+
 def test_vocabulary_uses_name_brand_and_category_only():
     vocab = ranker.vocabulary([product(1, "Mouse Gamer", brand="Logi", category="Periféricos",
                                        description="ergonomico")])
@@ -143,6 +155,8 @@ VOCAB = {"laptop", "mouse", "keyboard", "headphones"}
         (["xyzw"], None),  # nada próximo
         (["abc"], None),  # menos de 4 letras: não corrige
         (["mouze", "laptoq"], ["mouse", "laptop"]),
+        (["laptops"], None),  # casa via term_matches (radical): não é typo
+        (["keyboards"], None),  # idem, mesmo estando a 1 edição de "keyboard"
     ],
 )
 def test_correct_terms(terms, expected):
