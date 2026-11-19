@@ -196,6 +196,9 @@ def build_prompt(meta, body):
     return prompt + f"# ARQUIVOS EXISTENTES RELEVANTES\n{read_files(meta.get('context_files', []))}"
 
 
+SEARCH_MARK_RE = re.compile(r"^<{5,9} ?SEARCH[ \t]*$|^>{5,9} ?REPLACE[ \t]*$", re.MULTILINE)
+
+
 def apply_files(reply: str):
     """Grava os blocos FILE e aplica os EDIT. Devolve (arquivos alterados, erros dos EDIT)
     e os erros são [(caminho, motivo)]. Os pares de um EDIT que batem são aplicados mesmo se
@@ -208,6 +211,11 @@ def apply_files(reply: str):
         if is_protected(target.relative_to(ROOT).as_posix()):  # testes e gerados
             continue
         if kind == "FILE":
+            if SEARCH_MARK_RE.search(body):  # bloco EDIT com cabeçalho de FILE: gravaria os marcadores
+                errors.append((rel, "### FILE com marcadores <<<<<<< SEARCH / >>>>>>> REPLACE; o arquivo NÃO "
+                                    "foi gravado. Use ### EDIT para mudanças pontuais, ou ### FILE com o "
+                                    "conteúdo completo, sem marcadores"))
+                continue
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(body + "\n" if body else "")
             written.append(rel)
@@ -237,7 +245,7 @@ def edit_feedback(errors) -> str:
         return ""
     msgs = "\n".join(f"- {rel}: {err}" for rel, err in errors)
     files = read_files(sorted({rel for rel, _ in errors if (ROOT / rel).exists()}))
-    return (f"Alguns EDIT não foram aplicados:\n{msgs}\n"
+    return (f"Alguns blocos FILE/EDIT não foram aplicados:\n{msgs}\n"
             f"Conteúdo atual desses arquivos (copie o SEARCH exatamente daqui):\n{files}\n\n")
 
 
