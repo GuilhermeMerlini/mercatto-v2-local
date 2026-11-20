@@ -14,3 +14,4 @@ tests/test_issue_09_search_service.py
 tests/test_issue_10_cart_items.py
 tests/test_issue_11_cart_save_for_later.py
 tests/test_issue_12_payments_mock.py
+tests/test_issue_13_orders_checkout.py

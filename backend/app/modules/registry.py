@@ -2,4 +2,5 @@
 
 from app.modules.cart.models import CartItem  # noqa: F401
 from app.modules.catalog.models import Product  # noqa: F401
+from app.modules.orders.models import Order, OrderItem  # noqa: F401
 from app.modules.users.models import User  # noqa: F401
