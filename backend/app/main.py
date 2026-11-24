@@ -10,6 +10,7 @@ from app.modules.cart.router import router as cart_router
 from app.modules.catalog.router import router as catalog_router
 from app.modules.search.router import router as search_router
 from app.modules.users.router import router as users_router
+from app.modules.orders.router import router as orders_router
 
 
 @asynccontextmanager
