@@ -10,6 +10,8 @@ from sqlalchemy.orm import Session
 
 from app.core.clock import utcnow
 from app.core.errors import (
+    ConflictError,
+    ForbiddenError,
     InvalidInputError,
     NotFoundError,
 )
@@ -67,6 +69,67 @@ class OrderView:
     out_for_delivery_at: Optional[datetime]
     delivered_at: Optional[datetime]
     estimated_delivery_date: Optional[date]
+
+
+def _get_owned(session: Session, order_id: int, buyer_id: int) -> Order:
+    stmt = select(Order).where(Order.id == order_id, Order.buyer_id == buyer_id)
+    order = session.execute(stmt).scalar_one_or_none()
+    if not order:
+        # Verificar se o pedido existe para qualquer comprador
+        stmt = select(Order).where(Order.id == order_id)
+        existing_order = session.execute(stmt).scalar_one_or_none()
+        if existing_order:
+            raise ForbiddenError("Order belongs to another buyer")
+        else:
+            raise NotFoundError("Order not found")
+    return order
+
+
+def get_order(session: Session, order_id: int, buyer_id: int) -> OrderView:
+    order = _get_owned(session, order_id, buyer_id)
+    return _order_to_view(session, order)
+
+
+def list_by_buyer(session: Session, buyer_id: int) -> list[OrderView]:
+    stmt = select(Order).where(Order.buyer_id == buyer_id).order_by(Order.created_at.desc(), Order.id.desc())
+    orders = session.execute(stmt).scalars().all()
+    return [_order_to_view(session, order) for order in orders]
+
+
+def update_shipping_address(session: Session, order_id: int, buyer_id: int, address: Address) -> OrderView:
+    order = _get_owned(session, order_id, buyer_id)
+    if order.status == OrderStatus.CANCELLED:
+        raise ConflictError("Cannot update address of cancelled order")
+    if order.fulfillment_status != FulfillmentStatus.NOT_SHIPPED:
+        raise ConflictError("Cannot update address of shipped order")
+
+    # Validar campos do endereço
+    if not address.full_name.strip():
+        raise InvalidInputError("Full name is required")
+    if not address.street.strip():
+        raise InvalidInputError("Street is required")
+    if not address.city.strip():
+        raise InvalidInputError("City is required")
+    if not address.state.strip():
+        raise InvalidInputError("State is required")
+    if not address.zip.strip():
+        raise InvalidInputError("Zip code is required")
+
+    # Atualizar campos do endereço
+    stmt = update(Order).where(Order.id == order_id).values(
+        address_full_name=address.full_name,
+        address_street=address.street,
+        address_city=address.city,
+        address_state=address.state,
+        address_zip=address.zip,
+    )
+    session.execute(stmt)
+    session.commit()
+
+    # Recarregar o pedido para retornar o valor atualizado
+    stmt = select(Order).where(Order.id == order_id)
+    updated_order = session.execute(stmt).scalar_one()
+    return _order_to_view(session, updated_order)
 
 
 def checkout(

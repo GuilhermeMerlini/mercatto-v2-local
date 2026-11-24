@@ -4,9 +4,43 @@ from sqlalchemy.orm import Session
 from app.core.db import get_session
 from app.core.deps import AuthUser, get_current_user
 from app.modules.orders import service
-from app.modules.orders.schemas import CheckoutIn, OrderOut
+from app.modules.orders.schemas import AddressIn, CheckoutIn, OrderOut
 
 router = APIRouter(prefix="/api/orders")
+
+
+@router.get("", response_model=list[OrderOut])
+def list_orders(
+    auth: AuthUser = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    return service.list_by_buyer(session, auth.id)
+
+
+@router.get("/{order_id}", response_model=OrderOut)
+def get_order(
+    order_id: int,
+    auth: AuthUser = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    return service.get_order(session, order_id, auth.id)
+
+
+@router.patch("/{order_id}/address", response_model=OrderOut)
+def update_address(
+    order_id: int,
+    data: AddressIn,
+    auth: AuthUser = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    address = service.Address(
+        full_name=data.full_name,
+        street=data.street,
+        city=data.city,
+        state=data.state,
+        zip=data.zip,
+    )
+    return service.update_shipping_address(session, order_id, auth.id, address)
 
 
 @router.post("/checkout", response_model=OrderOut)
