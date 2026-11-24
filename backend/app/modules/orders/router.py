@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.db import get_session
 from app.core.deps import AuthUser, get_current_user
 from app.modules.orders import service
-from app.modules.orders.schemas import AddressIn, CheckoutIn, OrderOut
+from app.modules.orders.schemas import AddressIn, CheckoutIn, OrderOut, RetryPaymentIn
 
 router = APIRouter(prefix="/api/orders")
 
@@ -71,3 +71,13 @@ def checkout(
         payment_method=data.payment_method,
         idempotency_key=idempotency_key,
     )
+
+
+@router.post("/{order_id}/payment", response_model=OrderOut)
+def retry_payment(
+    order_id: int,
+    data: RetryPaymentIn,
+    auth: AuthUser = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    return service.retry_payment(session, order_id, auth.id, data.payment_method)
