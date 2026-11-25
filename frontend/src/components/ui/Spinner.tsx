@@ -4,7 +4,7 @@ export function Spinner() {
   return (
     <span 
       role="status" 
-      aria-label="Carregando"
+      aria-label="Loading"
       className="spinner"
     />
   );

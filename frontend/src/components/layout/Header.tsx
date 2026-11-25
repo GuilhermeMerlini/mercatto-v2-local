@@ -25,25 +25,25 @@ export function Header() {
 
       <form className="header__search" role="search" onSubmit={handleSubmit}>
         <Input
-          label="Buscar produtos"
+          label="Search products"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="header__search-input"
         />
-        <Button type="submit" variant="primary">Buscar</Button>
+        <Button type="submit" variant="primary">Search</Button>
       </form>
 
       <div className="header__user">
         {user ? (
           <>
             <span className="header__user-name">{user.name}</span>
-            <Link to="/orders" className="header__link">Meus pedidos</Link>
-            <Link to="/account" className="header__link">Minha conta</Link>
-            {user.role === "SELLER" && <Link to="/seller" className="header__link">Painel do vendedor</Link>}
-            <Button variant="ghost" onClick={logout}>Sair</Button>
+            <Link to="/orders" className="header__link">My orders</Link>
+            <Link to="/account" className="header__link">My account</Link>
+            {user.role === "SELLER" && <Link to="/seller" className="header__link">Seller dashboard</Link>}
+            <Button variant="ghost" onClick={logout}>Sign out</Button>
           </>
         ) : (
-          <Link to="/signin" className="header__link">Entrar</Link>
+          <Link to="/signin" className="header__link">Sign in</Link>
         )}
       </div>
     </header>

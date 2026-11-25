@@ -1,5 +1,5 @@
 import { FC } from "react";
 
-const Register: FC = () => <h1>Criar conta</h1>;
+const Register: FC = () => <h1>Create account</h1>;
 
 export default Register;

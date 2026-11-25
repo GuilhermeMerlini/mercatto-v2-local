@@ -207,7 +207,7 @@ describe("App", () => {
     mockApi({});
     renderApp("/rota-que-nao-existe");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Página não encontrada" }),
+      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
     ).toBeInTheDocument();
   });
 
@@ -250,7 +250,7 @@ describe("App", () => {
     mockApi({ "GET /api/users/me": () => new Promise<Response>(() => {}) });
     renderApp("/cart");
     await settle();
-    expect(screen.queryByRole("heading", { level: 1, name: "Carrinho" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { level: 1, name: "Cart" })).not.toBeInTheDocument();
     expect(currentLocation().pathname).toBe("/cart");
   });
 
