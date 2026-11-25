@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import { api, ApiError, onUnauthorized } from "../api/client";
+import { api, onUnauthorized } from "../api/client";
 import { getToken, setToken, clearToken } from "../api/token";
 import { User, LoginResponse } from "../api/types";
 
@@ -35,15 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const userData = await api<User>("/api/users/me");
       setUser(userData);
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        clearToken();
-        setUser(null);
-      }
+    } catch {
+      logout();
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [logout]);
 
   useEffect(() => {
     loadUser();
