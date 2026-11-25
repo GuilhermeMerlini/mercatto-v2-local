@@ -1,7 +1,7 @@
 ---
 id: 22-front-scaffold
 title: "front: projeto Vite + React + TS, cliente da API, autenticação e rotas"
-depends: [21-integration-flow]
+depends: [19-seed]
 provides: [frontend/src/api/client.ts, frontend/src/api/token.ts, frontend/src/api/types.ts, frontend/src/auth/AuthContext.tsx, frontend/src/auth/RequireAuth.tsx, frontend/src/lib/money.ts, frontend/src/App.tsx]
 context_files: [docs/SPEC.md, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_22_scaffold.test.tsx]
 test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_22_scaffold.test.tsx
