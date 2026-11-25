@@ -1,0 +1,28 @@
+.price {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.price__current {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.price__old {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-light);
+  text-decoration: line-through;
+}
+
+.price__badge {
+  background-color: var(--color-success);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-caption);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-small);
+}

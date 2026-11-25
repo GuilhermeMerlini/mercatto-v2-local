@@ -1,0 +1,26 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.star-rating__stars {
+  position: relative;
+  display: inline-block;
+  color: var(--color-secondary);
+  font-size: var(--font-size-body-small);
+  line-height: var(--line-height-body-small);
+  white-space: nowrap;
+}
+
+.star-rating__full {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  overflow: hidden;
+}
+
+.star-rating__count {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text);
+}
