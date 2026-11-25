@@ -1,0 +1,19 @@
+.footer {
+  background-color: var(--color-surface);
+  border-top: var(--border-width) solid var(--color-border);
+  padding: var(--spacing-lg) var(--spacing-lg);
+  margin-top: auto;
+}
+
+.footer__content {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.footer__copyright {
+  color: var(--color-text-light);
+  font-size: var(--font-size-body-small);
+  margin: 0;
+}

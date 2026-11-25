@@ -14,7 +14,7 @@ export function StarRating({ value, count }: StarRatingProps) {
   return (
     <span className="star-rating">
       <span role="img" aria-label={ariaLabel} className="star-rating__stars">
-        <span className="star-rating__empty">☆☆☆☆☆</span>
+        <span>☆☆☆☆☆</span>
         <span className="star-rating__full" style={{ width: `${(filled / 5) * 100}%` }}>
           ★★★★★
         </span>

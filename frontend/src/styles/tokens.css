@@ -54,6 +54,12 @@
   --transition: 0.2s ease-in-out;
   --transition-reduced: none;
 
+  /* Layout */
+  --layout-max-width: 75rem;
+  --card-min-width: 15.5rem;
+  --card-image-height: 12.5rem;
+  --border-width: 1px;
+
   /* Foco */
   --focus-outline: 2px solid var(--color-primary);
   --focus-outline-offset: 2px;

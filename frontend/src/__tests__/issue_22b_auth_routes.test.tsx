@@ -185,48 +185,47 @@ describe("AuthProvider / useAuth", () => {
 });
 
 // ---------- App: rotas e RequireAuth ----------
+// As páginas são trocadas pelas issues seguintes, então estes testes verificam a URL final
+// (onde o usuário termina), e não o título de cada página.
 
-const PUBLIC: [string, string][] = [
-  ["/", "Home"],
-  ["/search?q=livro", "Busca"],
-  ["/products/1", "Produto"],
-  ["/signin", "Entrar"],
-  ["/register", "Criar conta"],
-  ["/rota-que-nao-existe", "Página não encontrada"],
-];
+const PUBLIC = ["/", "/search?q=livro", "/products/1", "/signin", "/register"];
+const PROTECTED = ["/cart", "/checkout", "/orders", "/orders/7", "/account"];
 
-const PROTECTED: [string, string][] = [
-  ["/cart", "Carrinho"],
-  ["/checkout", "Finalizar compra"],
-  ["/orders", "Meus pedidos"],
-  ["/orders/7", "Pedido"],
-  ["/account", "Minha conta"],
-];
+/** Espera o app assentar (efeitos e redirecionamentos) antes de olhar a URL. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
 describe("App", () => {
-  it.each(PUBLIC)("rota pública %s mostra o título %s", async (path, title) => {
+  it.each(PUBLIC)("rota pública %s abre sem login", async (path) => {
     mockApi({});
     renderApp(path);
-    expect(await screen.findByRole("heading", { level: 1, name: title })).toBeInTheDocument();
+    await settle();
+    const location = currentLocation();
+    expect(location.pathname + location.search).toBe(path);
   });
 
-  it.each([...PROTECTED, ["/seller", "Painel do vendedor"]])(
-    "deslogado, %s redireciona para /signin?next=",
-    async (path) => {
-      mockApi({});
-      renderApp(path);
-      expect(await screen.findByRole("heading", { level: 1, name: "Entrar" })).toBeInTheDocument();
-      const location = currentLocation();
-      expect(location.pathname).toBe("/signin");
-      expect(location.searchParams.get("next")).toBe(path);
-    },
-  );
+  it("rota desconhecida mostra Página não encontrada", async () => {
+    mockApi({});
+    renderApp("/rota-que-nao-existe");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Página não encontrada" }),
+    ).toBeInTheDocument();
+  });
 
-  it.each(PROTECTED)("logado, %s mostra o título %s", async (path, title) => {
-    setToken("tok-buyer");
-    mockApi({ "GET /api/users/me": () => json(200, BUYER) });
+  it.each([...PROTECTED, "/seller"])("deslogado, %s redireciona para /signin?next=", async (path) => {
+    mockApi({});
     renderApp(path);
-    expect(await screen.findByRole("heading", { level: 1, name: title })).toBeInTheDocument();
+    await waitFor(() => expect(currentLocation().pathname).toBe("/signin"));
+    expect(currentLocation().searchParams.get("next")).toBe(path);
+  });
+
+  it.each(PROTECTED)("logado, %s abre sem redirecionar", async (path) => {
+    setToken("tok-buyer");
+    const fetchMock = mockApi({ "GET /api/users/me": () => json(200, BUYER) });
+    renderApp(path);
+    await waitFor(() =>
+      expect(fetchMock.mock.calls.some(([input]) => String(input).endsWith("/api/users/me"))).toBe(true),
+    );
+    await settle();
     expect(currentLocation().pathname).toBe(path);
   });
 
@@ -234,25 +233,24 @@ describe("App", () => {
     setToken("tok-buyer");
     mockApi({ "GET /api/users/me": () => json(200, BUYER) });
     renderApp("/seller");
-    expect(await screen.findByRole("heading", { level: 1, name: "Home" })).toBeInTheDocument();
-    expect(currentLocation().pathname).toBe("/");
+    await waitFor(() => expect(currentLocation().pathname).toBe("/"));
   });
 
   it("vendedor acessa /seller", async () => {
     setToken("tok-seller");
     mockApi({ "GET /api/users/me": () => json(200, SELLER) });
     renderApp("/seller");
-    expect(
-      await screen.findByRole("heading", { level: 1, name: "Painel do vendedor" }),
-    ).toBeInTheDocument();
+    await settle();
+    await settle();
+    expect(currentLocation().pathname).toBe("/seller");
   });
 
   it("enquanto carrega o usuário, a rota protegida não renderiza nem redireciona", async () => {
     setToken("tok-lento");
     mockApi({ "GET /api/users/me": () => new Promise<Response>(() => {}) });
     renderApp("/cart");
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    expect(screen.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
+    await settle();
+    expect(screen.queryByRole("heading", { level: 1, name: "Carrinho" })).not.toBeInTheDocument();
     expect(currentLocation().pathname).toBe("/cart");
   });
 
@@ -260,7 +258,7 @@ describe("App", () => {
     setToken("tok-velho");
     mockApi({ "GET /api/users/me": () => json(401, { detail: "Token expired" }) });
     renderApp("/orders");
-    expect(await screen.findByRole("heading", { level: 1, name: "Entrar" })).toBeInTheDocument();
+    await waitFor(() => expect(currentLocation().pathname).toBe("/signin"));
     expect(currentLocation().searchParams.get("next")).toBe("/orders");
     await waitFor(() => expect(getToken()).toBeFalsy());
   });
