@@ -4,7 +4,7 @@ title: "front: meus pedidos e detalhes do pedido"
 depends: [28-front-checkout]
 provides: []
 context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, frontend/src/components/orders/AddressFields.tsx, backend/app/modules/orders/schemas.py, frontend/src/__tests__/issue_29_orders.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_29_orders.test.tsx
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_29_orders.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: meus pedidos e detalhes do pedido

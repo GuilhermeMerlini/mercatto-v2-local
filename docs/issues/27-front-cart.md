@@ -4,7 +4,7 @@ title: "front: carrinho (contexto, contador no header e página)"
 depends: [26-front-product]
 provides: [frontend/src/cart/CartContext.tsx]
 context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, frontend/src/App.tsx, frontend/src/components/layout/Header.tsx, frontend/src/pages/Product.tsx, backend/app/modules/cart/schemas.py, frontend/src/__tests__/issue_27_cart.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_27_cart.test.tsx
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_27_cart.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: carrinho (contexto, contador no header e página)
