@@ -36,6 +36,7 @@
 .btn--ghost {
   background-color: transparent;
   color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .btn--ghost:hover:not(:disabled) {

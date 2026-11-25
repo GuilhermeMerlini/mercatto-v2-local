@@ -1,0 +1,6 @@
+.error-message {
+  background-color: var(--color-error);
+  color: var(--color-on-primary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-small);
+}
