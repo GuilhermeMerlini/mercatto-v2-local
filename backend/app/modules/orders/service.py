@@ -10,6 +10,8 @@ from sqlalchemy.orm import Session
 
 from app.core.clock import utcnow
 from app.core.errors import (
+    ConflictError,
+    ForbiddenError,
     InvalidInputError,
     NotFoundError,
 )
@@ -67,6 +69,67 @@ class OrderView:
     out_for_delivery_at: Optional[datetime]
     delivered_at: Optional[datetime]
     estimated_delivery_date: Optional[date]
+
+
+def _get_owned(session: Session, order_id: int, buyer_id: int) -> Order:
+    stmt = select(Order).where(Order.id == order_id, Order.buyer_id == buyer_id)
+    order = session.execute(stmt).scalar_one_or_none()
+    if not order:
+        # Verificar se o pedido existe para qualquer comprador
+        stmt = select(Order).where(Order.id == order_id)
+        existing_order = session.execute(stmt).scalar_one_or_none()
+        if existing_order:
+            raise ForbiddenError("Order belongs to another buyer")
+        else:
+            raise NotFoundError("Order not found")
+    return order
+
+
+def get_order(session: Session, order_id: int, buyer_id: int) -> OrderView:
+    order = _get_owned(session, order_id, buyer_id)
+    return _order_to_view(session, order)
+
+
+def list_by_buyer(session: Session, buyer_id: int) -> list[OrderView]:
+    stmt = select(Order).where(Order.buyer_id == buyer_id).order_by(Order.created_at.desc(), Order.id.desc())
+    orders = session.execute(stmt).scalars().all()
+    return [_order_to_view(session, order) for order in orders]
+
+
+def update_shipping_address(session: Session, order_id: int, buyer_id: int, address: Address) -> OrderView:
+    order = _get_owned(session, order_id, buyer_id)
+    if order.status == OrderStatus.CANCELLED:
+        raise ConflictError("Cannot update address of cancelled order")
+    if order.fulfillment_status != FulfillmentStatus.NOT_SHIPPED:
+        raise ConflictError("Cannot update address of shipped order")
+
+    # Validar campos do endereço
+    if not address.full_name.strip():
+        raise InvalidInputError("Full name is required")
+    if not address.street.strip():
+        raise InvalidInputError("Street is required")
+    if not address.city.strip():
+        raise InvalidInputError("City is required")
+    if not address.state.strip():
+        raise InvalidInputError("State is required")
+    if not address.zip.strip():
+        raise InvalidInputError("Zip code is required")
+
+    # Atualizar campos do endereço
+    stmt = update(Order).where(Order.id == order_id).values(
+        address_full_name=address.full_name,
+        address_street=address.street,
+        address_city=address.city,
+        address_state=address.state,
+        address_zip=address.zip,
+    )
+    session.execute(stmt)
+    session.commit()
+
+    # Recarregar o pedido para retornar o valor atualizado
+    stmt = select(Order).where(Order.id == order_id)
+    updated_order = session.execute(stmt).scalar_one()
+    return _order_to_view(session, updated_order)
 
 
 def checkout(
@@ -279,3 +342,85 @@ def _order_to_view(session: Session, order: Order) -> OrderView:
         delivered_at=order.delivered_at,
         estimated_delivery_date=estimated_delivery_date,
     )
+
+
+def retry_payment(session: Session, order_id: int, buyer_id: int, payment_method: PaymentMethod) -> OrderView:
+    # 1. Verificar se o pedido pertence ao comprador e está em status FAILED
+    order = _get_owned(session, order_id, buyer_id)
+    if order.status != OrderStatus.FAILED:
+        raise ConflictError("Order must be in FAILED status to retry payment")
+
+    # 2. Reivindicar o pedido com UPDATE condicional
+    result = session.execute(
+        update(Order)
+        .where(Order.id == order_id, Order.status == OrderStatus.FAILED)
+        .values(status=OrderStatus.PROCESSING, payment_method=payment_method)
+    )
+    session.commit()
+    if result.rowcount == 0:
+        raise ConflictError("Order is not in FAILED status or has been modified by another process")
+
+    # 3. Reservar estoque dos itens do pedido
+    reserved = []
+    try:
+        stmt = select(OrderItem).where(OrderItem.order_id == order_id)
+        items = session.execute(stmt).scalars().all()
+        for item in items:
+            catalog.decrease_stock(session, item.product_id, item.quantity)
+            reserved.append((item.product_id, item.quantity))
+    except Exception:
+        # Reverter todas as reservas e voltar o pedido para FAILED
+        for product_id, quantity in reserved:
+            catalog.increase_stock(session, product_id, quantity)
+        session.execute(
+            update(Order)
+            .where(Order.id == order_id)
+            .values(status=OrderStatus.FAILED)
+        )
+        session.commit()
+        raise
+
+    # 4. Processar pagamento
+    try:
+        result = payments.charge(order_id, order.total_cents, "BRL")
+    except Exception:
+        # Marcar como FAILED e reverter estoque
+        session.execute(
+            update(Order)
+            .where(Order.id == order_id)
+            .values(status=OrderStatus.FAILED)
+        )
+        session.commit()
+        # Reverter todas as reservas
+        for product_id, quantity in reserved:
+            catalog.increase_stock(session, product_id, quantity)
+        raise
+
+    # Atualizar status do pedido com base no resultado do pagamento
+    if result.approved:
+        session.execute(
+            update(Order)
+            .where(Order.id == order_id)
+            .values(
+                status=OrderStatus.PAID,
+                paid_at=utcnow(),
+                payment_transaction_id=result.transaction_id,
+            )
+        )
+    else:
+        # Pagamento recusado
+        session.execute(
+            update(Order)
+            .where(Order.id == order_id)
+            .values(status=OrderStatus.FAILED)
+        )
+        session.commit()
+        # Reverter todas as reservas
+        for product_id, quantity in reserved:
+            catalog.increase_stock(session, product_id, quantity)
+        # Não lançar exceção, apenas retornar o pedido como FAILED
+        return _order_to_view(session, order)
+
+    session.commit()
+    session.refresh(order)
+    return _order_to_view(session, order)

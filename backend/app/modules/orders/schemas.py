@@ -75,3 +75,7 @@ class OrderOut(BaseModel):
     out_for_delivery_at: Optional[datetime]
     delivered_at: Optional[datetime]
     estimated_delivery_date: Optional[date]
+
+
+class RetryPaymentIn(BaseModel):
+    payment_method: PaymentMethod
