@@ -45,3 +45,55 @@ jobs:
             echo "$changed"
             exit 1
           fi
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # O schema da API é gerado a partir do backend, então o job precisa do Python também.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: |
+          pip install -r ../backend/requirements.txt
+          npm ci --no-audit --no-fund
+
+      - name: Gerar os tipos da API
+        run: |
+          python ../harness/export_openapi.py > openapi.json
+          npm run gen:api
+
+      # Os testes de cada issue do front entram junto com a implementação, então roda todos.
+      - name: Testes
+        run: npx vitest run
+
+      - name: Build
+        run: npm run build
+
+      # Testes novos podem entrar (cada issue traz o seu); os que já existem não podem mudar.
+      # Para liberar de propósito, use a label "edita-testes" no PR.
+      - name: Testes não foram alterados
+        if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'edita-testes')
+        run: |
+          changed=$(git diff --name-only --diff-filter=MDR "origin/${{ github.base_ref }}...HEAD" -- src/__tests__/)
+          if [ -n "$changed" ]; then
+            echo "::error::Este PR altera ou apaga arquivos de frontend/src/__tests__/:"
+            echo "$changed"
+            exit 1
+          fi
