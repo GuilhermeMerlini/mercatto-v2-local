@@ -39,12 +39,12 @@ Acrescente os aliases (os nomes dos schemas são exatamente estes):
 
 - `Header`, dentro de um `<header>`
   - Logo "Mercatto" como link para `/`.
-  - Formulário de busca com `role="search"`, input com rótulo acessível "Buscar produtos" e
-    botão "Buscar". Ao enviar, navega para `/search?q=<texto>`.
-  - Deslogado: link "Entrar" para `/signin`.
-  - Logado: o nome do usuário, um link "Meus pedidos" para `/orders`, um link "Minha conta"
-    para `/account` e o botão "Sair".
-  - Se for `SELLER`, também um link "Painel do vendedor" para `/seller`.
+  - Formulário de busca com `role="search"`, input com rótulo acessível "Search products" e
+    botão "Search". Ao enviar, navega para `/search?q=<texto>`.
+  - Deslogado: link "Sign in" para `/signin`.
+  - Logado: o nome do usuário, um link "My orders" para `/orders`, um link "My account"
+    para `/account` e o botão "Sign out".
+  - Se for `SELLER`, também um link "Seller dashboard" para `/seller`.
 - `Footer`, dentro de um `<footer>`
 - `Layout`: Header + `<main>` + Footer. Envolve todas as rotas em `App.tsx` (use `<Outlet/>`).
 
@@ -55,7 +55,7 @@ Acrescente os aliases (os nomes dos schemas são exatamente estes):
 - o nome como link para `/products/:id`;
 - `Price`;
 - `StarRating`, só se `review_count > 0`;
-- o texto "Esgotado" quando `stock === 0`.
+- o texto "Out of stock" quando `stock === 0`.
 
 ## Páginas
 
@@ -68,17 +68,17 @@ Acrescente os aliases (os nomes dos schemas são exatamente estes):
   `min_price` e `max_price` (em reais na URL, convertidos para centavos na API, nos parâmetros
   `min_price_cents` e `max_price_cents`, com `Math.round`), `min_rating`, `sort` e `page`.
   - Chama `GET /api/search/products` com esses parâmetros e `page_size=20`.
-  - Título: `Resultados para "<q>"`, ou o nome da categoria, ou "Todos os produtos".
-  - Se `corrected_query` vier preenchido, mostra o texto `Mostrando resultados para "<corrigido>"`
+  - Título: `Results for "<q>"`, ou o nome da categoria, ou "All products".
+  - Se `corrected_query` vier preenchido, mostra o texto `Showing results for "<corrected>"`
     (num só elemento, sem formatação dentro).
-  - Mostra o total ("37 produtos").
+  - Mostra o total ("37 products").
   - Filtros:
-    - um `Select` "Ordenar por", com as opções Relevância, Menor preço, Maior preço e Melhor
-      avaliados (valores `relevance`, `price_asc`, `price_desc`, `rating`);
-    - inputs "Preço mínimo" e "Preço máximo";
-    - um `Select` "Avaliação mínima" (Qualquer, 4+, 3+, 2+; valores `""`, `4`, `3`, `2`).
+    - um `Select` "Sort by", com as opções "Relevance", "Price: low to high", "Price: high to low" e
+      "Top rated" (valores `relevance`, `price_asc`, `price_desc`, `rating`);
+    - inputs "Min price" e "Max price";
+    - um `Select` "Minimum rating" ("Any", 4+, 3+, 2+; valores `""`, `4`, `3`, `2`).
 
     Mudar qualquer filtro atualiza a URL e volta para a página 1 (sem botão "Aplicar": os preços
     podem atualizar a cada mudança ou ao sair do campo).
-  - Grade de `ProductCard`. Sem resultados: `EmptyState` com o título "Nenhum produto
-    encontrado". Use o componente `Pagination`.
+  - Grade de `ProductCard`. Sem resultados: `EmptyState` com o título "No products
+    found". Use o componente `Pagination`.

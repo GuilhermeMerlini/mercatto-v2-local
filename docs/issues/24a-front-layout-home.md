@@ -11,7 +11,7 @@ max_iters: 4
 
 Os testes estão em `frontend/src/__tests__/issue_24a_layout_home.test.tsx` e **não podem ser alterados**. Siga o
 `frontend/DESIGN.md` e use os componentes de `components/ui`. A página de busca fica para a 24b:
-aqui o botão "Buscar" do cabeçalho só navega para `/search?q=<texto>`.
+aqui o botão "Search" do cabeçalho só navega para `/search?q=<texto>`.
 
 **Estilos:** não há Tailwind nem nenhuma biblioteca de CSS no projeto. Cada componente ou página
 tem o seu `.css`, importado no `.tsx`, com classes próprias que usam só `var(--token)` de
@@ -38,12 +38,12 @@ Acrescente os aliases (os nomes dos schemas são exatamente estes):
 
 - `Header`, dentro de um `<header>`
   - Logo "Mercatto" como link para `/`.
-  - Formulário de busca com `role="search"`, input com rótulo acessível "Buscar produtos" e
-    botão "Buscar". Ao enviar, navega para `/search?q=<texto>`.
-  - Deslogado: link "Entrar" para `/signin`.
-  - Logado: o nome do usuário, um link "Meus pedidos" para `/orders`, um link "Minha conta"
-    para `/account` e o botão "Sair".
-  - Se for `SELLER`, também um link "Painel do vendedor" para `/seller`.
+  - Formulário de busca com `role="search"`, input com rótulo acessível "Search products" e
+    botão "Search". Ao enviar, navega para `/search?q=<texto>`.
+  - Deslogado: link "Sign in" para `/signin`.
+  - Logado: o nome do usuário, um link "My orders" para `/orders`, um link "My account"
+    para `/account` e o botão "Sign out".
+  - Se for `SELLER`, também um link "Seller dashboard" para `/seller`.
 - `Footer`, dentro de um `<footer>`
 - `Layout`: Header + `<main>` + Footer. Envolve todas as rotas em `App.tsx` (use `<Outlet/>`).
 
@@ -54,7 +54,7 @@ Acrescente os aliases (os nomes dos schemas são exatamente estes):
 - o nome como link para `/products/:id`;
 - `Price`;
 - `StarRating`, só se `review_count > 0`;
-- o texto "Esgotado" quando `stock === 0`.
+- o texto "Out of stock" quando `stock === 0`.
 
 ## Página Home (`/`)
 

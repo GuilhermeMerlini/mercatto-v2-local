@@ -57,13 +57,13 @@ Restrições:
    - `Price({ cents, listCents? })`: usa `formatCents`. Se `listCents > cents`, mostra também o
      preço antigo riscado (`<s>`) e o desconto em % arredondado (`"-25%"`).
    - `StarRating({ value, count? })`: um elemento com `role="img"` e
-     `aria-label="Nota 4,5 de 5"` (uma casa decimal, vírgula). Se `count` vier, mostra
+     `aria-label="Rated 4.5 out of 5"` (uma casa decimal). Se `count` vier, mostra
      `"(12)"` ao lado.
-   - `Spinner`: `role="status"` com texto acessível `"Carregando"`.
+   - `Spinner`: `role="status"` com texto acessível `"Loading"`.
    - `EmptyState({ title, children? })`: o `title` vai num heading (`<h2>`).
    - `ErrorMessage({ children })`: `role="alert"`.
-   - `Pagination({ page, total, pageSize, onChange })`: botões "Anterior" e "Próxima", este
-     desabilitado na última página e "Anterior" na primeira. Texto `"Página 2 de 5"`. Não
+   - `Pagination({ page, total, pageSize, onChange })`: botões "Previous" e "Next", este
+     desabilitado na última página e "Previous" na primeira. Texto `"Page 2 of 5"`. Não
      renderiza nada se houver uma página só.
 
 ## O que os testes também conferem

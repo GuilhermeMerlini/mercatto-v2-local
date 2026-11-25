@@ -11,29 +11,31 @@ max_iters: 5
 
 Os testes estão em `frontend/src/__tests__/issue_30_seller.test.tsx` e **não podem ser
 alterados**. Rota `/seller`, só `SELLER`. Três abas acessíveis (`role="tablist"`, `role="tab"` e
-`role="tabpanel"`): "Visão geral", "Produtos" e "Pedidos". A aba ativa fica na URL
+`role="tabpanel"`): "Overview", "Products" e "Orders". A aba ativa fica na URL
 (`?tab=overview|products|orders`).
+
+A interface é em **inglês**: os textos entre aspas abaixo são exatos (os testes procuram por eles).
 
 ## Visão geral
 
 `GET /api/sellers/{id}/metrics`. Mostra:
-- "Receita" (`total_revenue_cents`, formatado);
-- "Pedidos recebidos" (a quantidade, de `GET /api/sellers/{id}/orders`);
-- a lista "Estoque baixo", com nome e estoque, ou "Nenhum produto com estoque baixo".
+- "Revenue" (`total_revenue_cents`, formatado);
+- "Orders received" (a quantidade, de `GET /api/sellers/{id}/orders`);
+- a lista "Low stock", com nome e estoque, ou "No products with low stock".
 
 ## Produtos
 
 `GET /api/sellers/{id}/products` com `Pagination`.
-- Tabela com as colunas Produto, Preço, Estoque e Nota, e as ações "Editar" e "Excluir" em cada
+- Tabela com as colunas Product, Price, Stock e Rating, e as ações "Edit" e "Delete" em cada
   linha.
-- Botão "Novo produto".
+- Botão "New product".
 - Formulário (criar e editar):
-  - campos: Nome, Descrição, Preço (em reais; envia `price_cents`), "Preço original"
-    (opcional; `list_price_cents`), Estoque, Categoria, "URL da imagem", Marca, Modelo,
-    "Garantia (meses)";
+  - campos: Name, Description, Price (em dólares; envia `price_cents`), "List price"
+    (opcional; `list_price_cents`), Stock, Category, "Image URL", Brand, Model,
+    "Warranty (months)";
   - salva com `POST` ou `PUT /api/catalog/products[/:id]`;
   - erros 400/422 aparecem em `ErrorMessage` com o `detail`.
-- "Excluir" pede confirmação ("Excluir <nome>?") com os botões "Excluir" e "Cancelar".
+- "Delete" pede confirmação ("Delete <name>?") com os botões "Delete" e "Cancel".
   Confirmado, chama `DELETE` e remove a linha.
 
 ## Pedidos
@@ -45,8 +47,8 @@ Para pedido `PAID` ainda não entregue, mostre um botão com a próxima etapa:
 
 | Etapa atual | Botão | Envia |
 |---|---|---|
-| `NOT_SHIPPED` | Marcar como enviado | `SHIPPED` |
-| `SHIPPED` | Saiu para entrega | `OUT_FOR_DELIVERY` |
-| `OUT_FOR_DELIVERY` | Marcar como entregue | `DELIVERED` |
+| `NOT_SHIPPED` | Mark as shipped | `SHIPPED` |
+| `SHIPPED` | Mark as out for delivery | `OUT_FOR_DELIVERY` |
+| `OUT_FOR_DELIVERY` | Mark as delivered | `DELIVERED` |
 
 O botão chama `POST /api/sellers/{id}/orders/{order_id}/fulfillment` e atualiza a linha.

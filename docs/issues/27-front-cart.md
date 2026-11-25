@@ -11,6 +11,8 @@ max_iters: 5
 
 Os testes estão em `frontend/src/__tests__/issue_27_cart.test.tsx` e **não podem ser alterados**.
 
+A interface é em **inglês**: os textos entre aspas abaixo são exatos (os testes procuram por eles).
+
 ## `src/cart/CartContext.tsx`
 
 `CartProvider` (dentro de `AuthProvider` em `App.tsx`) e `useCart()`, que devolve
@@ -23,26 +25,25 @@ removeItem(productId), saveForLater(productId), moveToCart(productId), clear(), 
 
 ## Header
 
-Link "Carrinho" para `/cart`, com o número de itens (`item_count`). O nome acessível inclui o
-número: `aria-label="Carrinho, 3 itens"`.
+Link "Cart" para `/cart`, com o número de itens (`item_count`). O nome acessível inclui o
+número: `aria-label="Cart, 3 items"`.
 
 ## Produto
 
 No `data-slot="buy-box"`:
-- um `Select` "Quantidade" (1 até `min(10, stock)`);
-- o botão "Adicionar ao carrinho". Deslogado, ele leva para `/signin?next=/products/:id`.
+- um `Select` "Quantity" (1 até `min(10, stock)`);
+- o botão "Add to cart". Deslogado, ele leva para `/signin?next=/products/:id`.
   Esgotado, fica desabilitado.
 
-Depois de adicionar, mostra "Adicionado ao carrinho" (`role="status"`) com um link "Ver
-carrinho".
+Depois de adicionar, mostra "Added to cart" (`role="status"`) com um link "View
+cart".
 
 ## Carrinho (`/cart`)
 
 - Itens: imagem, nome (link), preço unitário, um `Select` de quantidade com rótulo
-  "Quantidade de <nome>" e os botões "Salvar para depois" e "Remover".
-- Resumo: "Subtotal (N itens)" com `total_cents` e o botão "Finalizar compra", que leva para
+  "Quantity for <name>" e os botões "Save for later" e "Remove".
+- Resumo: "Subtotal (N items)" com `total_cents` e o botão "Proceed to checkout", que leva para
   `/checkout` e fica desabilitado com o carrinho vazio.
-- Seção "Salvos para depois", só se houver itens, com os botões "Mover para o carrinho" e
-  "Remover".
-- Carrinho vazio → `EmptyState` com o título "Seu carrinho está vazio" e um link para continuar
-  comprando.
+- Seção "Saved for later", só se houver itens, com os botões "Move to cart" e
+  "Remove".
+- Carrinho vazio → `EmptyState` com o título "Your cart is empty" e um link "Continue shopping".

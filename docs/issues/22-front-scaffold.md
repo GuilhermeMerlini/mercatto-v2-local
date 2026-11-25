@@ -11,7 +11,7 @@ max_iters: 5
 
 Dividida em **22a** (`src/api/` e `src/lib/`) e **22b** (`src/auth/`, `App.tsx`, `main.tsx` e páginas).
 Os testes estão em `frontend/src/__tests__/issue_22a_api.test.ts` e
-`issue_22b_auth_routes.test.tsx` e **não podem ser alterados**. A interface é em **português do Brasil**. Esta issue **não** define visual: as
+`issue_22b_auth_routes.test.tsx` e **não podem ser alterados**. A interface é em **inglês**. Esta issue **não** define visual: as
 páginas são só placeholders (o design vem na issue 23).
 
 ## Esqueleto (já existe, não altere)
@@ -40,7 +40,7 @@ exporta). Nunca escreva esse arquivo nem tipos da API à mão.
     - Se houver token, envia `Authorization: Bearer <token>`.
     - Resposta 204 → `undefined`.
     - Status não-2xx → lança `ApiError`. `detail` vem do corpo: string, ou, quando é lista (422
-      do FastAPI), os `msg` unidos por `"; "`. Sem corpo JSON → `"Erro <status>"`.
+      do FastAPI), os `msg` unidos por `"; "`. Sem corpo JSON → `"Error <status>"`.
     - Em 401, chama todos os callbacks registrados com
       `export function onUnauthorized(cb: () => void): () => void` (o retorno remove o
       callback).
@@ -64,19 +64,19 @@ exporta). Nunca escreva esse arquivo nem tipos da API à mão.
 
 ## `src/lib/money.ts`
 
-`formatCents(cents: number): string` → `Intl.NumberFormat("pt-BR", { style: "currency",
-currency: "BRL" })` sobre `cents / 100` (`1320` → `"R$ 13,20"`).
+`formatCents(cents: number): string` → `Intl.NumberFormat("en-US", { style: "currency",
+currency: "USD" })` sobre `cents / 100` (`1320` → `"$13.20"`).
 
 ## `src/App.tsx`
 
 Rotas com `react-router-dom`. Cada página fica em `src/pages/<Nome>.tsx` e por ora só mostra um
 `<h1>` com o nome:
-- `/` (Home), `/search` (Busca), `/products/:id` (Produto), `/signin` (Entrar),
-  `/register` (Criar conta);
-- `/cart` (Carrinho), `/checkout` (Finalizar compra), `/orders` (Meus pedidos),
-  `/orders/:id` (Pedido), `/account` (Minha conta): todas com `RequireAuth`;
-- `/seller` (Painel do vendedor): `RequireAuth role="SELLER"`;
-- `*` (Página não encontrada).
+- `/` (Home), `/search` (Search), `/products/:id` (Product), `/signin` (Sign in),
+  `/register` (Create account);
+- `/cart` (Cart), `/checkout` (Checkout), `/orders` (My orders),
+  `/orders/:id` (Order), `/account` (My account): todas com `RequireAuth`;
+- `/seller` (Seller dashboard): `RequireAuth role="SELLER"`;
+- `*` (Page not found).
 
 `App` envolve tudo em `AuthProvider`. Exports: `App` é `export default`; `AuthProvider`, `useAuth`
 e `RequireAuth` são exports nomeados. `main.tsx` monta `<BrowserRouter><App/></BrowserRouter>`,

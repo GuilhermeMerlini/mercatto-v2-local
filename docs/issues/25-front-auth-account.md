@@ -12,33 +12,35 @@ max_iters: 5
 Os testes estão em `frontend/src/__tests__/issue_25_auth_account.test.tsx` e **não podem ser
 alterados**. Use `useAuth()` e os componentes de `components/ui`.
 
+A interface é em **inglês**: os textos entre aspas abaixo são exatos (os testes procuram por eles).
+
 ## Entrar (`/signin`)
 
-- Campos "Email" e "Senha" e botão "Entrar" (com `loading` enquanto envia).
+- Campos "Email" e "Password" e botão "Sign in" (com `loading` enquanto envia).
 - Sucesso → navega para o parâmetro `next` da URL ou para `/`.
-- Erro 401 → `ErrorMessage` com o texto "Email ou senha incorretos".
-- Link "Criar conta" para `/register`, preservando o `next`.
+- Erro 401 → `ErrorMessage` com o texto "Incorrect email or password".
+- Link "Create account" para `/register`, preservando o `next`.
 - Já logado → redireciona para `/`.
 
 ## Criar conta (`/register`)
 
-- Campos "Nome", "Email", "Senha" (dica: mínimo de 8 caracteres) e "Confirmar senha".
-- Um grupo de rádio "Tipo de conta" com as opções "Quero comprar" (`BUYER`, padrão) e "Quero
-  vender" (`SELLER`).
+- Campos "Name", "Email", "Password" (dica: "At least 8 characters") e "Confirm password".
+- Um grupo de rádio "Account type" com as opções "I want to buy" (`BUYER`, padrão) e "I want to
+  sell" (`SELLER`).
 - Validação no cliente antes de enviar, com o erro no próprio campo:
-  - senha com menos de 8 → "A senha precisa ter pelo menos 8 caracteres";
-  - senhas diferentes → "As senhas não conferem".
-- Erro 409 → erro no campo Email: "Este email já está cadastrado".
+  - senha com menos de 8 → "Password must be at least 8 characters";
+  - senhas diferentes → "Passwords do not match".
+- Erro 409 → erro no campo Email: "This email is already registered".
 - Sucesso → já entra (o `register` do contexto faz login) e navega para `next` ou `/`.
 
 ## Minha conta (`/account`)
 
-- Seção "Dados pessoais": Nome e Email preenchidos com o usuário atual e botão "Salvar"
+- Seção "Personal details": "Name" e "Email" preenchidos com o usuário atual e botão "Save"
   (`PATCH /api/users/me`).
-  - Sucesso → mensagem "Dados atualizados" (`role="status"`) e atualiza o usuário no contexto.
+  - Sucesso → mensagem "Details updated" (`role="status"`) e atualiza o usuário no contexto.
     Para isso, acrescente `refreshUser()` ao `AuthContext`.
   - 409 → erro no Email.
-- Seção "Alterar senha": "Senha atual", "Nova senha" e "Confirmar nova senha", com botão
-  "Alterar senha" (`PUT /api/users/me/password`).
-  - Sucesso → "Senha alterada" e limpa os campos.
-  - 400 → erro no campo "Senha atual" com o `detail` da API. **Não** deslogue: 400 não é 401.
+- Seção "Change password": "Current password", "New password" e "Confirm new password", com botão
+  "Change password" (`PUT /api/users/me/password`).
+  - Sucesso → "Password changed" e limpa os campos.
+  - 400 → erro no campo "Current password" com o `detail` da API. **Não** deslogue: 400 não é 401.
