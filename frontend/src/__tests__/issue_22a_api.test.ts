@@ -47,9 +47,9 @@ describe("formatCents", () => {
   const norm = (s: string) => s.replace(/\s/g, " ");
 
   it("formata centavos em reais", () => {
-    expect(norm(formatCents(1320))).toBe("R$ 13,20");
-    expect(norm(formatCents(0))).toBe("R$ 0,00");
-    expect(norm(formatCents(123456))).toBe("R$ 1.234,56");
+    expect(norm(formatCents(1320))).toBe("$13.20");
+    expect(norm(formatCents(0))).toBe("$0.00");
+    expect(norm(formatCents(123456))).toBe("$1,234.56");
   });
 });
 
@@ -120,19 +120,19 @@ describe("api", () => {
     mockApi({
       "POST /api/x": () => json(422, {
         detail: [
-          { loc: ["body", "email"], msg: "email inválido", type: "value_error" },
-          { loc: ["body", "password"], msg: "senha curta", type: "value_error" },
+          { loc: ["body", "email"], msg: "invalid email", type: "value_error" },
+          { loc: ["body", "password"], msg: "password too short", type: "value_error" },
         ],
       }),
     });
     const err = await api("/api/x", { method: "POST", body: {} }).catch((e: unknown) => e);
-    expect(err).toMatchObject({ status: 422, detail: "email inválido; senha curta" });
+    expect(err).toMatchObject({ status: 422, detail: "invalid email; password too short" });
   });
 
   it("usa 'Erro <status>' quando a resposta não é JSON", async () => {
     mockApi({ "GET /api/x": () => new Response("Internal Server Error", { status: 500 }) });
     const err = await api("/api/x").catch((e: unknown) => e);
-    expect(err).toMatchObject({ status: 500, detail: "Erro 500" });
+    expect(err).toMatchObject({ status: 500, detail: "Error 500" });
   });
 
   it("chama os callbacks de onUnauthorized em 401 e permite removê-los", async () => {

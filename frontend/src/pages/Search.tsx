@@ -42,7 +42,7 @@ export default function Search() {
       const response = await api<SearchResult>(`/api/search/products?${params.toString()}`);
       setResults(response);
     } catch (err) {
-      setError("Erro ao carregar resultados da busca");
+      setError("Could not load the search results");
       console.error(err);
     } finally {
       setLoading(false);
@@ -111,7 +111,7 @@ export default function Search() {
     });
   };
 
-  const title = q ? `Resultados para "${q}"` : category || "Todos os produtos";
+  const title = q ? `Results for "${q}"` : category || "All products";
   const correctedQuery = results?.corrected_query;
   const total = results?.total || 0;
 
@@ -119,22 +119,22 @@ export default function Search() {
     <div className="search">
       <h1 className="search__title">{title}</h1>
       {correctedQuery && (
-        <p className="search__corrected">Mostrando resultados para "{correctedQuery}"</p>
+        <p className="search__corrected">Showing results for "{correctedQuery}"</p>
       )}
-      <p className="search__total">{total} produtos</p>
+      <p className="search__total">{total} {total === 1 ? "product" : "products"}</p>
       <div className="search__filters">
         <Select
-          label="Ordenar por"
+          label="Sort by"
           value={sort}
           onChange={handleSortChange}
         >
-          <option value="relevance">Relevância</option>
-          <option value="price_asc">Menor preço</option>
-          <option value="price_desc">Maior preço</option>
-          <option value="rating">Melhor avaliados</option>
+          <option value="relevance">Relevance</option>
+          <option value="price_asc">Price: low to high</option>
+          <option value="price_desc">Price: high to low</option>
+          <option value="rating">Top rated</option>
         </Select>
         <Input
-          label="Preço mínimo"
+          label="Min price"
           type="number"
           value={minPrice}
           onChange={handleMinPriceChange}
@@ -142,7 +142,7 @@ export default function Search() {
           step="0.01"
         />
         <Input
-          label="Preço máximo"
+          label="Max price"
           type="number"
           value={maxPrice}
           onChange={handleMaxPriceChange}
@@ -150,11 +150,11 @@ export default function Search() {
           step="0.01"
         />
         <Select
-          label="Avaliação mínima"
+          label="Minimum rating"
           value={minRating}
           onChange={handleMinRatingChange}
         >
-          <option value="">Qualquer</option>
+          <option value="">Any</option>
           <option value="4">4+</option>
           <option value="3">3+</option>
           <option value="2">2+</option>
@@ -165,7 +165,7 @@ export default function Search() {
       ) : error ? (
         <ErrorMessage>{error}</ErrorMessage>
       ) : results?.items.length === 0 ? (
-        <EmptyState title="Nenhum produto encontrado" />
+        <EmptyState title="No products found" />
       ) : (
         <>
           <div className="search__products">

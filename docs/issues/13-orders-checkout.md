@@ -69,7 +69,7 @@ Reexporte os enums de `models.py`.
    reservado e propaga o erro. Nenhum pedido é criado.
 4. Cria o pedido com status `PROCESSING`, os itens (`seller_id` e `unit_price_cents` vêm do
    produto) e `total_cents` = soma de preço × quantidade.
-5. Cobra com `payments.service.charge(order.id, total_cents, "BRL")`.
+5. Cobra com `payments.service.charge(order.id, total_cents, "USD")`.
    - **Aprovado** → `PAID`, com `paid_at` e `payment_transaction_id`.
    - **Recusado** → `FAILED` e devolve o estoque. Recusa **não** é exceção: o pedido volta com
      status `FAILED`.

@@ -67,10 +67,10 @@ describe("arquivos de design", () => {
 describe("Button", () => {
   it("é um botão que repassa as props de <button>", async () => {
     const onClick = vi.fn();
-    render(<Button type="submit" name="salvar" onClick={onClick}>Salvar</Button>);
-    const button = screen.getByRole("button", { name: "Salvar" });
+    render(<Button type="submit" name="save" onClick={onClick}>Save</Button>);
+    const button = screen.getByRole("button", { name: "Save" });
     expect(button).toHaveAttribute("type", "submit");
-    expect(button).toHaveAttribute("name", "salvar");
+    expect(button).toHaveAttribute("name", "save");
     await userEvent.click(button);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
@@ -78,9 +78,9 @@ describe("Button", () => {
   it("aceita as três variantes", () => {
     render(
       <>
-        <Button variant="primary">Um</Button>
-        <Button variant="secondary">Dois</Button>
-        <Button variant="ghost">Três</Button>
+        <Button variant="primary">One</Button>
+        <Button variant="secondary">Two</Button>
+        <Button variant="ghost">Three</Button>
       </>,
     );
     expect(screen.getAllByRole("button")).toHaveLength(3);
@@ -88,7 +88,7 @@ describe("Button", () => {
 
   it("com loading fica desabilitado, com aria-busy, e não dispara o clique", async () => {
     const onClick = vi.fn();
-    render(<Button loading onClick={onClick}>Enviar</Button>);
+    render(<Button loading onClick={onClick}>Send</Button>);
     const button = screen.getByRole("button");
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute("aria-busy", "true");
@@ -108,10 +108,10 @@ describe("Button", () => {
 
 describe("Input", () => {
   it("liga o rótulo ao campo e repassa as props", async () => {
-    render(<Input label="Nome" name="nome" defaultValue="" />);
-    const input = screen.getByLabelText("Nome");
+    render(<Input label="Name" name="name" defaultValue="" />);
+    const input = screen.getByLabelText("Name");
     expect(input.tagName).toBe("INPUT");
-    expect(input).toHaveAttribute("name", "nome");
+    expect(input).toHaveAttribute("name", "name");
     await userEvent.type(input, "Ana");
     expect(input).toHaveValue("Ana");
   });
@@ -130,11 +130,11 @@ describe("Input", () => {
   });
 
   it("com erro, marca aria-invalid e descreve o campo com a mensagem", () => {
-    render(<Input label="Email" error="Email inválido" />);
+    render(<Input label="Email" error="Invalid email" />);
     const input = screen.getByLabelText("Email");
     expect(input).toHaveAttribute("aria-invalid", "true");
-    expect(input).toHaveAccessibleDescription("Email inválido");
-    expect(screen.getByText("Email inválido")).toBeInTheDocument();
+    expect(input).toHaveAccessibleDescription("Invalid email");
+    expect(screen.getByText("Invalid email")).toBeInTheDocument();
   });
 
   it("sem erro, não fica inválido", () => {
@@ -147,12 +147,12 @@ describe("Select", () => {
   it("liga o rótulo, mostra as opções e repassa onChange", async () => {
     const onChange = vi.fn();
     render(
-      <Select label="Ordenar por" defaultValue="relevance" onChange={onChange}>
-        <option value="relevance">Relevância</option>
-        <option value="price_asc">Menor preço</option>
+      <Select label="Sort by" defaultValue="relevance" onChange={onChange}>
+        <option value="relevance">Relevance</option>
+        <option value="price_asc">Price: low to high</option>
       </Select>,
     );
-    const select = screen.getByLabelText("Ordenar por");
+    const select = screen.getByLabelText("Sort by");
     expect(select.tagName).toBe("SELECT");
     await userEvent.selectOptions(select, "price_asc");
     expect(select).toHaveValue("price_asc");
@@ -161,13 +161,13 @@ describe("Select", () => {
 
   it("com erro, marca aria-invalid e descreve o campo com a mensagem", () => {
     render(
-      <Select label="Quantidade" error="Escolha uma quantidade">
+      <Select label="Quantity" error="Choose a quantity">
         <option value="1">1</option>
       </Select>,
     );
-    const select = screen.getByLabelText("Quantidade");
+    const select = screen.getByLabelText("Quantity");
     expect(select).toHaveAttribute("aria-invalid", "true");
-    expect(select).toHaveAccessibleDescription("Escolha uma quantidade");
+    expect(select).toHaveAccessibleDescription("Choose a quantity");
   });
 });
 
@@ -177,17 +177,17 @@ describe("Card", () => {
   it("renderiza os filhos e aceita o elemento em `as`", () => {
     render(
       <Card as="article">
-        <p>conteúdo</p>
+        <p>content</p>
       </Card>,
     );
     const article = screen.getByRole("article");
-    expect(article).toHaveTextContent("conteúdo");
+    expect(article).toHaveTextContent("content");
   });
 
   it("é uma div por padrão", () => {
-    const { container } = render(<Card>texto</Card>);
+    const { container } = render(<Card>text</Card>);
     expect(container.firstElementChild?.tagName).toBe("DIV");
-    expect(container).toHaveTextContent("texto");
+    expect(container).toHaveTextContent("text");
   });
 });
 

@@ -94,7 +94,7 @@ Animações:
 - Nome em `--font-size-body-large` em `--color-text`
 - Preço em `--font-size-h3` com `--color-primary`
 - Nota em estrelas com `--color-secondary` e texto em `--font-size-body-small`
-- "Esgotado" com fundo em `--color-error` e texto em `--color-on-primary`
+- "Out of stock" com fundo em `--color-error` e texto em `--color-on-primary`
 
 ### Preço com desconto
 - Preço atual em `--font-size-h3` com `--color-primary`
@@ -125,7 +125,7 @@ Animações:
 - Spinner com animação de rotação de 0.8s, com `--color-primary`
 
 ### Paginação
-- Botão "Anterior" e "Próxima" com borda em `--color-border`
+- Botão "Previous" e "Next" com borda em `--color-border`
 - Texto de página em `--font-size-body` e `--color-text`
 
 ## 8. O que NÃO fazer
@@ -135,7 +135,7 @@ Animações:
 - Não usar `--color-secondary` nem `--color-border` como cor de texto (abaixo de 4.5:1 no fundo).
 - Não usar `--color-text-light` sobre fundos coloridos (`--color-secondary`, `--color-error`, `--color-success`).
 - Não remover o contorno de foco (`outline: none`) sem pôr outro indicador igualmente visível.
-- Não comunicar estado só por cor: erro tem texto, desconto tem o percentual, "Esgotado" tem a palavra.
+- Não comunicar estado só por cor: erro tem texto, desconto tem o percentual, "Out of stock" tem a palavra.
 - Não usar bibliotecas de ícones ou de componentes; ícones simples são caracteres ou CSS.
 - Não animar layout (largura, altura, posição); anime só cor, opacidade, sombra e `transform`.
 - Não imitar cores, logo ou cabeçalho de outros varejistas.

@@ -93,9 +93,9 @@ describe("Busca", () => {
     const fetchMock = mockSearch();
     renderApp("/search?q=fone");
     expect(
-      await screen.findByRole("heading", { level: 1, name: 'Resultados para "fone"' }),
+      await screen.findByRole("heading", { level: 1, name: 'Results for "fone"' }),
     ).toBeInTheDocument();
-    expect(await screen.findByText(/37 produtos/)).toBeInTheDocument();
+    expect(await screen.findByText(/37 products/)).toBeInTheDocument();
     expect(screen.getAllByRole("article")).toHaveLength(1);
     const params = lastSearch(fetchMock);
     expect(params.get("q")).toBe("fone");
@@ -114,7 +114,7 @@ describe("Busca", () => {
     mockSearch();
     renderApp("/search");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Todos os produtos" }),
+      await screen.findByRole("heading", { level: 1, name: "All products" }),
     ).toBeInTheDocument();
   });
 
@@ -122,8 +122,9 @@ describe("Busca", () => {
     mockSearch(searchResult([product()], 1, { corrected_query: "fone de ouvido" }));
     renderApp("/search?q=fone%20de%20ouvdo");
     expect(
-      await screen.findByText('Mostrando resultados para "fone de ouvido"'),
+      await screen.findByText('Showing results for "fone de ouvido"'),
     ).toBeInTheDocument();
+    expect(screen.getByText(/^1 product$/)).toBeInTheDocument();
   });
 
   it("converte preços em reais para centavos e repassa nota e ordem", async () => {
@@ -140,10 +141,10 @@ describe("Busca", () => {
   it("o Select de ordem tem as quatro opções e atualiza a URL voltando para a página 1", async () => {
     const fetchMock = mockSearch(searchResult([product()], 60));
     renderApp("/search?q=fone&page=3");
-    const select = await screen.findByLabelText("Ordenar por");
+    const select = await screen.findByLabelText("Sort by");
     const labels = within(select).getAllByRole("option").map((o) => o.textContent);
-    expect(labels).toEqual(["Relevância", "Menor preço", "Maior preço", "Melhor avaliados"]);
-    await userEvent.selectOptions(select, "Maior preço");
+    expect(labels).toEqual(["Relevance", "Price: low to high", "Price: high to low", "Top rated"]);
+    await userEvent.selectOptions(select, "Price: high to low");
     await waitFor(() => expect(currentLocation().searchParams.get("sort")).toBe("price_desc"));
     expect(currentLocation().searchParams.get("q")).toBe("fone");
     expect(currentLocation().searchParams.get("page") ?? "1").toBe("1");
@@ -153,9 +154,9 @@ describe("Busca", () => {
   it("o Select de avaliação mínima atualiza a URL", async () => {
     mockSearch();
     renderApp("/search?q=fone");
-    const select = await screen.findByLabelText("Avaliação mínima");
+    const select = await screen.findByLabelText("Minimum rating");
     const labels = within(select).getAllByRole("option").map((o) => o.textContent);
-    expect(labels).toEqual(["Qualquer", "4+", "3+", "2+"]);
+    expect(labels).toEqual(["Any", "4+", "3+", "2+"]);
     await userEvent.selectOptions(select, "4+");
     await waitFor(() => expect(currentLocation().searchParams.get("min_rating")).toBe("4"));
   });
@@ -163,27 +164,27 @@ describe("Busca", () => {
   it("o preço mínimo atualiza a URL em reais", async () => {
     mockSearch();
     renderApp("/search?q=fone&page=2");
-    const input = await screen.findByLabelText("Preço mínimo");
+    const input = await screen.findByLabelText("Min price");
     await userEvent.type(input, "50");
     await userEvent.tab();
     await waitFor(() => expect(currentLocation().searchParams.get("min_price")).toBe("50"));
     expect(currentLocation().searchParams.get("page") ?? "1").toBe("1");
-    expect(screen.getByLabelText("Preço máximo")).toBeInTheDocument();
+    expect(screen.getByLabelText("Max price")).toBeInTheDocument();
   });
 
   it("sem resultados, mostra o EmptyState", async () => {
     mockSearch(searchResult([], 0));
     renderApp("/search?q=xyzzy");
     expect(
-      await screen.findByRole("heading", { name: "Nenhum produto encontrado" }),
+      await screen.findByRole("heading", { name: "No products found" }),
     ).toBeInTheDocument();
   });
 
   it("pagina pela URL", async () => {
     const fetchMock = mockSearch(searchResult([product()], 45));
     renderApp("/search?q=fone");
-    expect(await screen.findByText("Página 1 de 3")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Próxima" }));
+    expect(await screen.findByText("Page 1 of 3")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
     await waitFor(() => expect(currentLocation().searchParams.get("page")).toBe("2"));
     await waitFor(() => expect(lastSearch(fetchMock).get("page")).toBe("2"));
   });
@@ -193,7 +194,7 @@ describe("Busca", () => {
     renderApp("/search?q=fone");
     expect(await screen.findByRole("status")).toBeInTheDocument();
     cleanup();
-    mockApi({ "GET /api/search/products": () => json(500, { detail: "Erro interno" }) });
+    mockApi({ "GET /api/search/products": () => json(500, { detail: "Internal error" }) });
     renderApp("/search?q=fone");
     expect(await screen.findByRole("alert")).toBeInTheDocument();
   });

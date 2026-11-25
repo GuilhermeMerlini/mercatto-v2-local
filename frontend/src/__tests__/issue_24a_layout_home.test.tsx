@@ -100,7 +100,7 @@ describe("Layout", () => {
     renderApp("/rota-que-nao-existe");
     const main = await screen.findByRole("main");
     expect(
-      within(main).getByRole("heading", { level: 1, name: "Página não encontrada" }),
+      within(main).getByRole("heading", { level: 1, name: "Page not found" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("banner")).toBeInTheDocument();
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
@@ -112,18 +112,18 @@ describe("Layout", () => {
     const header = await screen.findByRole("banner");
     expect(hrefOf(within(header).getByRole("link", { name: /Mercatto/ })).pathname).toBe("/");
     const search = within(header).getByRole("search");
-    expect(within(search).getByRole("textbox", { name: "Buscar produtos" })).toBeInTheDocument();
-    expect(within(search).getByRole("button", { name: "Buscar" })).toBeInTheDocument();
-    expect(hrefOf(within(header).getByRole("link", { name: "Entrar" })).pathname).toBe("/signin");
-    expect(within(header).queryByRole("button", { name: "Sair" })).not.toBeInTheDocument();
+    expect(within(search).getByRole("textbox", { name: "Search products" })).toBeInTheDocument();
+    expect(within(search).getByRole("button", { name: "Search" })).toBeInTheDocument();
+    expect(hrefOf(within(header).getByRole("link", { name: "Sign in" })).pathname).toBe("/signin");
+    expect(within(header).queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
   });
 
   it("a busca navega para /search?q=", async () => {
     mockApi({ "GET /api/search/products": () => json(200, searchResult([])) });
     renderApp("/rota-que-nao-existe");
     const header = await screen.findByRole("banner");
-    await userEvent.type(within(header).getByRole("textbox", { name: "Buscar produtos" }), "fone bluetooth");
-    await userEvent.click(within(header).getByRole("button", { name: "Buscar" }));
+    await userEvent.type(within(header).getByRole("textbox", { name: "Search products" }), "fone bluetooth");
+    await userEvent.click(within(header).getByRole("button", { name: "Search" }));
     await waitFor(() => expect(currentLocation().pathname).toBe("/search"));
     expect(currentLocation().searchParams.get("q")).toBe("fone bluetooth");
   });
@@ -134,11 +134,11 @@ describe("Layout", () => {
     renderApp("/rota-que-nao-existe");
     const header = await screen.findByRole("banner");
     expect(await within(header).findByText("Ana Compradora")).toBeInTheDocument();
-    expect(hrefOf(within(header).getByRole("link", { name: "Meus pedidos" })).pathname).toBe("/orders");
-    expect(hrefOf(within(header).getByRole("link", { name: "Minha conta" })).pathname).toBe("/account");
-    expect(within(header).getByRole("button", { name: "Sair" })).toBeInTheDocument();
-    expect(within(header).queryByRole("link", { name: "Entrar" })).not.toBeInTheDocument();
-    expect(within(header).queryByRole("link", { name: "Painel do vendedor" })).not.toBeInTheDocument();
+    expect(hrefOf(within(header).getByRole("link", { name: "My orders" })).pathname).toBe("/orders");
+    expect(hrefOf(within(header).getByRole("link", { name: "My account" })).pathname).toBe("/account");
+    expect(within(header).getByRole("button", { name: "Sign out" })).toBeInTheDocument();
+    expect(within(header).queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
+    expect(within(header).queryByRole("link", { name: "Seller dashboard" })).not.toBeInTheDocument();
   });
 
   it("logado como vendedor: também o Painel do vendedor", async () => {
@@ -146,7 +146,7 @@ describe("Layout", () => {
     mockApi({ "GET /api/users/me": () => json(200, SELLER) });
     renderApp("/rota-que-nao-existe");
     const header = await screen.findByRole("banner");
-    const link = await within(header).findByRole("link", { name: "Painel do vendedor" });
+    const link = await within(header).findByRole("link", { name: "Seller dashboard" });
     expect(hrefOf(link).pathname).toBe("/seller");
   });
 
@@ -155,8 +155,8 @@ describe("Layout", () => {
     mockApi({ "GET /api/users/me": () => json(200, BUYER) });
     renderApp("/rota-que-nao-existe");
     const header = await screen.findByRole("banner");
-    await userEvent.click(await within(header).findByRole("button", { name: "Sair" }));
-    expect(await within(header).findByRole("link", { name: "Entrar" })).toBeInTheDocument();
+    await userEvent.click(await within(header).findByRole("button", { name: "Sign out" }));
+    expect(await within(header).findByRole("link", { name: "Sign in" })).toBeInTheDocument();
     expect(getToken()).toBeFalsy();
   });
 });
@@ -181,13 +181,13 @@ describe("ProductCard", () => {
     // A imagem também pode ser link; todo link com o nome do produto leva a ele.
     const links = within(card).getAllByRole("link", { name: /Fone Bluetooth Zumbido/ });
     for (const link of links) expect(hrefOf(link).pathname).toBe("/products/7");
-    expect(norm(card.textContent)).toContain("R$ 13,20");
+    expect(norm(card.textContent)).toContain("$13.20");
   });
 
   it("mostra o desconto quando há preço original", () => {
     renderCard(product({ price_cents: 1500, list_price_cents: 2000 }));
     const card = screen.getByRole("article");
-    expect(norm(card.querySelector("s")?.textContent)).toBe("R$ 20,00");
+    expect(norm(card.querySelector("s")?.textContent)).toBe("$20.00");
     expect(card.textContent).toContain("-25%");
   });
 
@@ -199,19 +199,19 @@ describe("ProductCard", () => {
 
   it("só mostra a nota quando há avaliações", () => {
     renderCard(product({ average_rating: 0, review_count: 0 }));
-    expect(screen.queryByRole("img", { name: /^Nota/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /^Rated/ })).not.toBeInTheDocument();
     cleanup();
     renderCard(product({ average_rating: 4.5, review_count: 3 }));
-    expect(screen.getByRole("img", { name: "Nota 4,5 de 5" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Rated 4.5 out of 5" })).toBeInTheDocument();
     expect(screen.getByRole("article").textContent).toContain("(3)");
   });
 
   it("mostra Esgotado só sem estoque", () => {
     renderCard(product({ stock: 5 }));
-    expect(screen.queryByText("Esgotado")).not.toBeInTheDocument();
+    expect(screen.queryByText("Out of stock")).not.toBeInTheDocument();
     cleanup();
     renderCard(product({ stock: 0 }));
-    expect(screen.getByText("Esgotado")).toBeInTheDocument();
+    expect(screen.getByText("Out of stock")).toBeInTheDocument();
   });
 });
 
@@ -258,8 +258,8 @@ describe("Home", () => {
 
   it("mostra ErrorMessage quando a API falha", async () => {
     mockApi({
-      "GET /api/catalog/categories": () => json(500, { detail: "Erro interno" }),
-      "GET /api/catalog/products": () => json(500, { detail: "Erro interno" }),
+      "GET /api/catalog/categories": () => json(500, { detail: "Internal error" }),
+      "GET /api/catalog/products": () => json(500, { detail: "Internal error" }),
     });
     renderApp("/");
     expect((await screen.findAllByRole("alert")).length).toBeGreaterThan(0);

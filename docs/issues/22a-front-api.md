@@ -40,12 +40,12 @@ exporta). Nunca escreva esse arquivo nem tipos da API à mão.
     - Se houver token, envia `Authorization: Bearer <token>`.
     - Resposta 204 → `undefined`.
     - Status não-2xx → lança `ApiError`. `detail` vem do corpo: string, ou, quando é lista (422
-      do FastAPI), os `msg` unidos por `"; "`. Sem corpo JSON → `"Erro <status>"`.
+      do FastAPI), os `msg` unidos por `"; "`. Sem corpo JSON → `"Error <status>"`.
     - Em 401, chama todos os callbacks registrados com
       `export function onUnauthorized(cb: () => void): () => void` (o retorno remove o
       callback).
 
 ## `src/lib/money.ts`
 
-`formatCents(cents: number): string` → `Intl.NumberFormat("pt-BR", { style: "currency",
-currency: "BRL" })` sobre `cents / 100` (`1320` → `"R$ 13,20"`).
+`formatCents(cents: number): string` → `Intl.NumberFormat("en-US", { style: "currency",
+currency: "USD" })` sobre `cents / 100` (`1320` → `"$13.20"`).

@@ -23,7 +23,7 @@ Testes: `-k "retry"` (não podem ser alterados). Altere `orders/service.py`, `or
    e `commit`. Não use `order.status = ...` nessa etapa.
 3. Reserva de novo o estoque dos `OrderItem` do pedido com `catalog.decrease_stock`. Se falhar:
    devolve o que já reservou, volta o pedido para `FAILED` com `commit` e propaga o erro.
-4. `payments.charge(order_id, total_cents, "BRL")`: aprovado → `PAID` com `paid_at` e
+4. `payments.charge(order_id, total_cents, "USD")`: aprovado → `PAID` com `paid_at` e
    `payment_transaction_id`; recusado → `FAILED` e devolve o estoque; exceção → `FAILED`,
    devolve o estoque e propaga. Faça `commit`, `session.refresh(order)` e devolva `_order_to_view`.
 

@@ -25,17 +25,17 @@ export function Pagination({ page, total, pageSize, onChange }: PaginationProps)
   };
   
   return (
-    <nav aria-label="Paginação" className="pagination">
+    <nav aria-label="Pagination" className="pagination">
       <Button
         variant="ghost"
         onClick={handlePrevious}
         disabled={isFirstPage}
       >
-        Anterior
+        Previous
       </Button>
       
       <span className="pagination__text">
-        Página {page} de {totalPages}
+        Page {page} of {totalPages}
       </span>
       
       <Button
@@ -43,7 +43,7 @@ export function Pagination({ page, total, pageSize, onChange }: PaginationProps)
         onClick={handleNext}
         disabled={isLastPage}
       >
-        Próxima
+        Next
       </Button>
     </nav>
   );

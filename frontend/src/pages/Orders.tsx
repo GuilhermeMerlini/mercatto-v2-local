@@ -1,5 +1,5 @@
 import { FC } from "react";
 
-const Orders: FC = () => <h1>Meus pedidos</h1>;
+const Orders: FC = () => <h1>My orders</h1>;
 
 export default Orders;

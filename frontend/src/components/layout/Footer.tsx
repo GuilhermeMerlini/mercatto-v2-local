@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="footer__content">
-        <p className="footer__copyright">© 2026 Mercatto. Todos os direitos reservados.</p>
+        <p className="footer__copyright">© 2026 Mercatto. All rights reserved.</p>
       </div>
     </footer>
   );

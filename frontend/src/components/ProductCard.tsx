@@ -29,7 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       )}
       {product.stock === 0 && (
-        <div className="product-card__out-of-stock">Esgotado</div>
+        <div className="product-card__out-of-stock">Out of stock</div>
       )}
     </article>
   );

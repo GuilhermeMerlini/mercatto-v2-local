@@ -39,10 +39,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
     } else if (typeof detailData === "string") {
       detail = detailData;
     } else {
-      detail = `Erro ${response.status}`;
+      detail = `Error ${response.status}`;
     }
   } else {
-    detail = `Erro ${response.status}`;
+    detail = `Error ${response.status}`;
   }
 
   if (!response.ok) {

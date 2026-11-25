@@ -10,7 +10,7 @@ max_iters: 4
 # front: autenticação, rotas e páginas placeholder (parte 2 da issue 22)
 
 Os testes estão em `frontend/src/__tests__/issue_22b_auth_routes.test.tsx` e **não podem ser
-alterados**. A interface é em **português do Brasil**. Esta issue **não** define visual: as
+alterados**. A interface é em **inglês**. Esta issue **não** define visual: as
 páginas são só placeholders (o design vem na issue 23).
 
 `src/api/` e `src/lib/money.ts` já existem (issue 22a): use `api`, `onUnauthorized`, `getToken`,
@@ -39,12 +39,12 @@ existe: não altere nem adicione dependências.
 
 Rotas com `react-router-dom`. Cada página fica em `src/pages/<Nome>.tsx` e por ora só mostra um
 `<h1>` com o nome:
-- `/` (Home), `/search` (Busca), `/products/:id` (Produto), `/signin` (Entrar),
-  `/register` (Criar conta);
-- `/cart` (Carrinho), `/checkout` (Finalizar compra), `/orders` (Meus pedidos),
-  `/orders/:id` (Pedido), `/account` (Minha conta): todas com `RequireAuth`;
-- `/seller` (Painel do vendedor): `RequireAuth role="SELLER"`;
-- `*` (Página não encontrada).
+- `/` (Home), `/search` (Search), `/products/:id` (Product), `/signin` (Sign in),
+  `/register` (Create account);
+- `/cart` (Cart), `/checkout` (Checkout), `/orders` (My orders),
+  `/orders/:id` (Order), `/account` (My account): todas com `RequireAuth`;
+- `/seller` (Seller dashboard): `RequireAuth role="SELLER"`;
+- `*` (Page not found).
 
 `App` envolve tudo em `AuthProvider`. Exports: `App` é `export default`; `AuthProvider`, `useAuth`
 e `RequireAuth` são exports nomeados. `main.tsx` monta `<BrowserRouter><App/></BrowserRouter>`,
