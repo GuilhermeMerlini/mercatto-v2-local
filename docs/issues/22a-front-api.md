@@ -4,7 +4,7 @@ title: "front: cliente da API, token e formatação de dinheiro (parte 1 da issu
 depends: [19-seed]
 provides: [frontend/src/api/client.ts, frontend/src/api/token.ts, frontend/src/api/types.ts, frontend/src/lib/money.ts]
 context_files: [docs/SPEC.md, frontend/package.json, frontend/tsconfig.json, frontend/src/__tests__/issue_22a_api.test.ts]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npx tsc -b && npx vitest run src/__tests__/issue_22a_api.test.ts
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_22a_api.test.ts; t=$?; npx tsc -b; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 4
 ---
 # front: cliente da API, token e formatação de dinheiro (parte 1 da issue 22)

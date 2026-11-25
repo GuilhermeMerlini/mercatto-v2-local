@@ -4,7 +4,7 @@ title: "front: autenticação, rotas e páginas placeholder (parte 2 da issue 22
 depends: [22a-front-api]
 provides: [frontend/src/auth/AuthContext.tsx, frontend/src/auth/RequireAuth.tsx, frontend/src/App.tsx, frontend/src/main.tsx]
 context_files: [docs/SPEC.md, frontend/src/api/types.ts, frontend/src/__tests__/issue_22b_auth_routes.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_22a_api.test.ts src/__tests__/issue_22b_auth_routes.test.tsx
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_22a_api.test.ts src/__tests__/issue_22b_auth_routes.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 4
 ---
 # front: autenticação, rotas e páginas placeholder (parte 2 da issue 22)

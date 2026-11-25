@@ -4,7 +4,7 @@ title: "front: direção visual (DESIGN.md), tokens e componentes base"
 depends: [22-front-scaffold]
 provides: [frontend/src/components/ui/index.ts]
 context_files: [docs/SPEC.md, frontend/src/main.tsx, frontend/src/__tests__/issue_23_design.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_23_design.test.tsx
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_23_design.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: direção visual (DESIGN.md), tokens e componentes base

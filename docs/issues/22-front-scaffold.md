@@ -4,7 +4,7 @@ title: "front: projeto Vite + React + TS, cliente da API, autenticação e rotas
 depends: [21-integration-flow]
 provides: [frontend/src/api/client.ts, frontend/src/api/token.ts, frontend/src/api/types.ts, frontend/src/auth/AuthContext.tsx, frontend/src/auth/RequireAuth.tsx, frontend/src/lib/money.ts, frontend/src/App.tsx]
 context_files: [docs/SPEC.md, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_22a_api.test.ts, frontend/src/__tests__/issue_22b_auth_routes.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_22a_api.test.ts src/__tests__/issue_22b_auth_routes.test.tsx
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_22a_api.test.ts src/__tests__/issue_22b_auth_routes.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: projeto Vite + React + TS, cliente da API, autenticação e rotas

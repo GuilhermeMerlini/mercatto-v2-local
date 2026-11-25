@@ -4,7 +4,7 @@ title: "front: layout, home e busca"
 depends: [22-front-scaffold, 23-front-design]
 provides: [frontend/src/components/layout/Layout.tsx, frontend/src/components/ProductCard.tsx]
 context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, frontend/src/App.tsx, backend/app/modules/search/schemas.py, backend/app/modules/catalog/schemas.py, frontend/src/__tests__/issue_24_layout_home_search.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_24_layout_home_search.test.tsx
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_24_layout_home_search.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: layout, home e busca
