@@ -3,13 +3,15 @@ id: 23-front-design
 title: "front: direção visual (DESIGN.md), tokens e componentes base"
 depends: [22-front-scaffold]
 provides: [frontend/src/components/ui/index.ts]
-context_files: [docs/SPEC.md, frontend/src/main.tsx, frontend/src/__tests__/issue_23_design.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_23_design.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
+context_files: [docs/SPEC.md, frontend/src/main.tsx, frontend/src/__tests__/issue_23a_design_base.test.tsx, frontend/src/__tests__/issue_23b_ui_components.test.tsx]
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_23a_design_base.test.tsx src/__tests__/issue_23b_ui_components.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: direção visual (DESIGN.md), tokens e componentes base
 
-Os testes estão em `frontend/src/__tests__/issue_23_design.test.tsx` e **não podem ser
+Dividida em **23a** (`DESIGN.md`, tokens, `Button`, `Input`, `Select`, `Card`) e **23b** (`Price`,
+`StarRating`, `Spinner`, `EmptyState`, `ErrorMessage`, `Pagination`). Os testes estão em
+`frontend/src/__tests__/issue_23a_design_base.test.tsx` e `issue_23b_ui_components.test.tsx` e **não podem ser
 alterados**. Eles verificam comportamento e acessibilidade, não aparência. **O design é
 decisão sua.**
 
