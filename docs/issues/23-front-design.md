@@ -51,15 +51,23 @@ Restrições:
    - `Input` e `Select`: prop `label` **obrigatória**, ligada via `htmlFor`/`id` (gere o `id` com
      `useId`). Prop `error?: string`, mostrada abaixo do campo e ligada por `aria-describedby`,
      com `aria-invalid="true"`.
-   - `Card`: contêiner simples (`as?: "div" | "article" | "section"`).
+   - `Card`: contêiner simples (`as?: "div" | "article" | "section"`, `div` por padrão).
    - `Price({ cents, listCents? })`: usa `formatCents`. Se `listCents > cents`, mostra também o
      preço antigo riscado (`<s>`) e o desconto em % arredondado (`"-25%"`).
    - `StarRating({ value, count? })`: um elemento com `role="img"` e
      `aria-label="Nota 4,5 de 5"` (uma casa decimal, vírgula). Se `count` vier, mostra
      `"(12)"` ao lado.
    - `Spinner`: `role="status"` com texto acessível `"Carregando"`.
-   - `EmptyState({ title, children? })`
+   - `EmptyState({ title, children? })`: o `title` vai num heading (`<h2>`).
    - `ErrorMessage({ children })`: `role="alert"`.
    - `Pagination({ page, total, pageSize, onChange })`: botões "Anterior" e "Próxima", este
      desabilitado na última página e "Anterior" na primeira. Texto `"Página 2 de 5"`. Não
      renderiza nada se houver uma página só.
+
+## O que os testes também conferem
+
+- `frontend/DESIGN.md` com 30 a 150 linhas.
+- `tokens.css` com pelo menos 15 variáveis CSS em `:root`.
+- `:focus-visible` e `prefers-reduced-motion` em `tokens.css` ou `global.css`.
+- Nenhuma cor solta (hex, `rgb()`, `hsl()`) nos arquivos de `src/components/ui/`: as cores
+  ficam só em `tokens.css`.
