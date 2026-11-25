@@ -4,7 +4,7 @@ from app.core.errors import InvalidInputError
 from app.modules.payments import gateway
 
 
-def charge(order_id: int, amount_cents: int, currency: str = "BRL") -> gateway.PaymentResult:
+def charge(order_id: int, amount_cents: int, currency: str = "USD") -> gateway.PaymentResult:
     """Cobra um valor de um pedido."""
     if amount_cents <= 0:
         raise InvalidInputError("Amount must be positive")

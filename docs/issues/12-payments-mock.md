@@ -27,7 +27,7 @@ Este módulo não depende de nenhum outro e não tem tabelas nem endpoints.
 
 ## Criar `backend/app/modules/payments/service.py`
 
-- `charge(order_id, amount_cents, currency="BRL") -> PaymentResult`: `amount_cents <= 0` →
+- `charge(order_id, amount_cents, currency="USD") -> PaymentResult`: `amount_cents <= 0` →
   `InvalidInputError`. Delega ao gateway atual.
 - `set_gateway(gateway) -> None`: troca o gateway (usado nos testes).
 - O gateway inicial é `MockPaymentGateway(config.PAYMENT_MOCK_DECLINE)`.

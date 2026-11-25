@@ -17,14 +17,14 @@ def test_payment_result_is_frozen_dataclass():
 
 def test_none_mode_approves_with_unique_ids():
     gateway = gw.MockPaymentGateway()
-    results = [gateway.charge(order_id, 1000, "BRL") for order_id in (1, 1, 2)]
+    results = [gateway.charge(order_id, 1000, "USD") for order_id in (1, 1, 2)]
     assert all(r.approved for r in results)
     assert all(r.transaction_id.startswith("mock_") for r in results)
     assert len({r.transaction_id for r in results}) == 3
 
 
 def test_always_mode_declines():
-    result = gw.MockPaymentGateway("always").charge(1, 1000, "BRL")
+    result = gw.MockPaymentGateway("always").charge(1, 1000, "USD")
     assert result.approved is False
     assert result.transaction_id is None
     assert result.message
@@ -32,11 +32,11 @@ def test_always_mode_declines():
 
 def test_first_attempt_declines_once_per_order():
     gateway = gw.MockPaymentGateway("first-attempt")
-    assert gateway.charge(1, 1000, "BRL").approved is False
-    assert gateway.charge(1, 1000, "BRL").approved is True
-    assert gateway.charge(1, 1000, "BRL").approved is True
-    assert gateway.charge(2, 1000, "BRL").approved is False
-    assert gateway.charge(2, 1000, "BRL").approved is True
+    assert gateway.charge(1, 1000, "USD").approved is False
+    assert gateway.charge(1, 1000, "USD").approved is True
+    assert gateway.charge(1, 1000, "USD").approved is True
+    assert gateway.charge(2, 1000, "USD").approved is False
+    assert gateway.charge(2, 1000, "USD").approved is True
 
 
 def test_first_attempt_is_thread_safe():
@@ -47,7 +47,7 @@ def test_first_attempt_is_thread_safe():
 
     def charge():
         barrier.wait()
-        r = gateway.charge(7, 1000, "BRL")
+        r = gateway.charge(7, 1000, "USD")
         with lock:
             results.append(r.approved)
 
@@ -78,7 +78,7 @@ def test_service_delegates_to_current_gateway():
     service.set_gateway(recorder)
     result = service.charge(5, 2500)
     assert result.transaction_id == "rec_1"
-    assert recorder.calls == [(5, 2500, "BRL")]
+    assert recorder.calls == [(5, 2500, "USD")]
     service.charge(6, 100, "USD")
     assert recorder.calls[-1] == (6, 100, "USD")
 

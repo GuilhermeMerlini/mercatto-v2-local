@@ -255,7 +255,7 @@ def checkout(
 
     # 5. Processar pagamento
     try:
-        result = payments.charge(order_id, total_cents, "BRL")
+        result = payments.charge(order_id, total_cents, "USD")
     except Exception:
         # Marcar como FAILED e reverter estoque
         session.execute(
@@ -382,7 +382,7 @@ def retry_payment(session: Session, order_id: int, buyer_id: int, payment_method
 
     # 4. Processar pagamento
     try:
-        result = payments.charge(order_id, order.total_cents, "BRL")
+        result = payments.charge(order_id, order.total_cents, "USD")
     except Exception:
         # Marcar como FAILED e reverter estoque
         session.execute(

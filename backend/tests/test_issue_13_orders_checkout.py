@@ -185,7 +185,7 @@ def test_order_is_created_before_charge_with_its_id(session, ctx):
     order = service.checkout(session, ctx["uid"], [service.CheckoutItem(ctx["a"]["id"], 1)],
                              service.Address(**ADDRESS), service.ShippingMethod.STANDARD,
                              service.PaymentMethod.CARD)
-    assert seen == [(order.id, 3000, "BRL")]
+    assert seen == [(order.id, 3000, "USD")]
 
 
 # ---------- idempotência ----------

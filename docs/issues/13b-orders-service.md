@@ -32,6 +32,6 @@ quantity, unit_price_cents)` e `OrderView` (`id`, `buyer_id`, `status`, `fulfill
 4. Cria o pedido `PROCESSING` com os itens (`seller_id` e `unit_price_cents` do produto) e
    `total_cents`, e faz `commit`. Se der `IntegrityError` (mesma chave em paralelo): `rollback`,
    devolve o estoque e retorna o pedido existente.
-5. `payments.charge(order.id, total_cents, "BRL")`: aprovado → `PAID` com `paid_at` e
+5. `payments.charge(order.id, total_cents, "USD")`: aprovado → `PAID` com `paid_at` e
    `payment_transaction_id`; recusado → `FAILED` e devolve o estoque (não é exceção); exceção →
    `FAILED` com `commit`, devolve o estoque e propaga.
