@@ -3,39 +3,22 @@ id: 22-front-scaffold
 title: "front: projeto Vite + React + TS, cliente da API, autenticação e rotas"
 depends: [21-integration-flow]
 provides: [frontend/src/api/client.ts, frontend/src/api/token.ts, frontend/src/api/types.ts, frontend/src/auth/AuthContext.tsx, frontend/src/auth/RequireAuth.tsx, frontend/src/lib/money.ts, frontend/src/App.tsx]
-context_files: [docs/SPEC.md, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_22_scaffold.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_22_scaffold.test.tsx
+context_files: [docs/SPEC.md, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_22a_api.test.ts, frontend/src/__tests__/issue_22b_auth_routes.test.tsx]
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && npm run build && npx vitest run src/__tests__/issue_22a_api.test.ts src/__tests__/issue_22b_auth_routes.test.tsx
 max_iters: 5
 ---
 # front: projeto Vite + React + TS, cliente da API, autenticação e rotas
 
-Os testes estão em `frontend/src/__tests__/issue_22_scaffold.test.tsx` e **não podem ser
-alterados**. A interface é em **português do Brasil**. Esta issue **não** define visual: as
+Dividida em **22a** (`src/api/` e `src/lib/`) e **22b** (`src/auth/`, `App.tsx`, `main.tsx` e páginas).
+Os testes estão em `frontend/src/__tests__/issue_22a_api.test.ts` e
+`issue_22b_auth_routes.test.tsx` e **não podem ser alterados**. A interface é em **português do Brasil**. Esta issue **não** define visual: as
 páginas são só placeholders (o design vem na issue 23).
 
-## Projeto (`frontend/`)
+## Esqueleto (já existe, não altere)
 
-`package.json` com versões **exatas** (sem `^`):
-- dependências: `react@18.3.1`, `react-dom@18.3.1`, `react-router-dom@6.28.0`;
-- desenvolvimento: `typescript@5.6.3`, `vite@5.4.11`, `@vitejs/plugin-react@4.3.4`,
-  `vitest@2.1.8`, `jsdom@25.0.1`, `@testing-library/react@16.1.0`, `@testing-library/dom@10.4.0`,
-  `@testing-library/user-event@14.5.2`, `@testing-library/jest-dom@6.6.3`,
-  `openapi-typescript@7.4.4`, `@types/react@18.3.12`, `@types/react-dom@18.3.1`.
-
-Scripts:
-- `dev`: `vite`;
-- `build`: `tsc -b && vite build`;
-- `test`: `vitest run`;
-- `gen:api`: `openapi-typescript openapi.json -o src/api/schema.d.ts`.
-
-Também criar:
-- `tsconfig.json` com `strict: true`;
-- `vite.config.ts` com o plugin react e `test: { environment: "jsdom", setupFiles:
-  "./src/setupTests.ts", globals: true }`;
-- `index.html`;
-- `src/main.tsx`;
-- `src/setupTests.ts`, que importa `@testing-library/jest-dom/vitest`;
-- `.gitignore` com `node_modules`, `dist`, `openapi.json` e `src/api/schema.d.ts`.
+`package.json` (versões exatas e scripts `dev`, `build`, `test`, `gen:api`), `package-lock.json`,
+`tsconfig.json` (`strict: true`), `vite.config.ts`, `index.html`, `src/setupTests.ts` e
+`.gitignore` já estão commitados. Não adicione dependências.
 
 `src/api/schema.d.ts` é **gerado** (`npm run gen:api`, a partir do `openapi.json` que o harness
 exporta). Nunca escreva esse arquivo nem tipos da API à mão.
