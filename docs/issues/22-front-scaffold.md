@@ -69,6 +69,7 @@ exporta). Nunca escreva esse arquivo nem tipos da API à mão.
   password, role}), logout() }`.
   - `login` chama `POST /api/users/login`, guarda o token e define `user`.
   - `register` chama `POST /api/users/register` e depois `login`.
+  - Erros da API em `login` e `register` são propagados (`ApiError`), para a página mostrar.
   - `logout` limpa token e usuário.
   - Ao montar com token salvo, carrega `GET /api/users/me` (`loading` fica verdadeiro até
     terminar; erro → `logout`).
@@ -94,5 +95,6 @@ Rotas com `react-router-dom`. Cada página fica em `src/pages/<Nome>.tsx` e por 
 - `/seller` (Painel do vendedor): `RequireAuth role="SELLER"`;
 - `*` (Página não encontrada).
 
-`App` envolve tudo em `AuthProvider`. `main.tsx` monta `<BrowserRouter><App/></BrowserRouter>`,
+`App` envolve tudo em `AuthProvider`. Exports: `App` é `export default`; `AuthProvider`, `useAuth`
+e `RequireAuth` são exports nomeados. `main.tsx` monta `<BrowserRouter><App/></BrowserRouter>`,
 então **`App` não cria o router** (os testes o montam dentro de um `MemoryRouter`).
