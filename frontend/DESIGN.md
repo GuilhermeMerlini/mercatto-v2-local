@@ -61,6 +61,13 @@ Família de fonte: **Inter** (Google Fonts, pesos 400, 600 e 700, carregada no `
 - `--spacing-xl`: 2rem (32px)
 - `--spacing-xxl`: 3rem (48px)
 
+### Layout
+
+- `--layout-max-width`: 75rem (1200px), largura máxima do conteúdo
+- `--card-min-width`: 15.5rem (248px), largura mínima de um card na grade
+- `--card-image-height`: 12.5rem (200px), altura da imagem do card de produto
+- `--border-width`: 1px, espessura de todas as bordas
+
 ## 5. Raios e sombras
 
 - `--radius-small`: 0.25rem (4px)

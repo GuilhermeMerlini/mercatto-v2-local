@@ -45,6 +45,8 @@ export default function Home() {
 
   return (
     <div className="home">
+      <h1>Explore a feira</h1>
+      <h2>Categorias</h2>
       <div className="home__categories">
         {categories.map((category) => (
           <Link
@@ -56,6 +58,7 @@ export default function Home() {
           </Link>
         ))}
       </div>
+      <h2>Destaques</h2>
       <div className="home__products">
         {products?.items.map((product) => (
           <ProductCard key={product.id} product={product} />
