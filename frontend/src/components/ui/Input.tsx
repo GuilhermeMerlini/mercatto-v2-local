@@ -4,12 +4,15 @@ import "./Input.css";
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  /** Dica fixa abaixo do campo (ex.: regra da senha). O erro, quando há, substitui a dica na descrição acessível. */
+  hint?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className, ...props }, ref) => {
+  ({ label, error, hint, className, ...props }, ref) => {
     const id = useId();
     const errorId = error ? `${id}-error` : undefined;
+    const hintId = hint ? `${id}-hint` : undefined;
 
     return (
       <div className="input-wrapper">
@@ -22,8 +25,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={id}
           className={`input${error ? " input--error" : ""}${className ? ` ${className}` : ""}`}
           aria-invalid={error ? true : undefined}
-          aria-describedby={errorId}
+          aria-describedby={errorId ?? hintId}
         />
+        {hint && (
+          <div id={hintId} className="input-hint">
+            {hint}
+          </div>
+        )}
         {error && (
           <div id={errorId} className="input-error">
             {error}

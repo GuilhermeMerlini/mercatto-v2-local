@@ -210,12 +210,18 @@ def apply_files(reply: str):
             continue
         if is_protected(target.relative_to(ROOT).as_posix()):  # testes e gerados
             continue
-        if kind == "FILE":
-            if SEARCH_MARK_RE.search(body):  # bloco EDIT com cabeçalho de FILE: gravaria os marcadores
+        if kind == "FILE" and SEARCH_MARK_RE.search(body):
+            # Bloco EDIT com cabeçalho de FILE: gravar o corpo poria os marcadores no código.
+            # Se o arquivo existe e os pares são válidos, aplica como EDIT; senão, avisa.
+            pairs = EDIT_RE.findall(body)
+            if target.exists() and pairs:
+                kind, body = "EDIT", pairs
+            else:
                 errors.append((rel, "### FILE com marcadores <<<<<<< SEARCH / >>>>>>> REPLACE; o arquivo NÃO "
-                                    "foi gravado. Use ### EDIT para mudanças pontuais, ou ### FILE com o "
-                                    "conteúdo completo, sem marcadores"))
+                                    "foi gravado. Use ### EDIT para mudanças pontuais em arquivo que existe, "
+                                    "ou ### FILE com o conteúdo completo, sem marcadores"))
                 continue
+        if kind == "FILE":
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(body + "\n" if body else "")
             written.append(rel)

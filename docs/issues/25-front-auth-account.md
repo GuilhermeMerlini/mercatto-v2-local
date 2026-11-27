@@ -3,14 +3,15 @@ id: 25-front-auth-account
 title: "front: entrar, criar conta e minha conta"
 depends: [22-front-scaffold, 23-front-design]
 provides: []
-context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_25_auth_account.test.tsx]
-test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_25_auth_account.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
+context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_25a_signin_register.test.tsx, frontend/src/__tests__/issue_25b_account.test.tsx]
+test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_25a_signin_register.test.tsx src/__tests__/issue_25b_account.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 5
 ---
 # front: entrar, criar conta e minha conta
 
-Os testes estão em `frontend/src/__tests__/issue_25_auth_account.test.tsx` e **não podem ser
-alterados**. Use `useAuth()` e os componentes de `components/ui`.
+Dividida em **25a** (entrar e criar conta) e **25b** (minha conta). Os testes estão em
+`frontend/src/__tests__/issue_25a_signin_register.test.tsx` e `issue_25b_account.test.tsx` e **não podem
+ser alterados**. Use `useAuth()` e os componentes de `components/ui`.
 
 A interface é em **inglês**: os textos entre aspas abaixo são exatos (os testes procuram por eles).
 

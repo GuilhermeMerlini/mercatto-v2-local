@@ -67,6 +67,7 @@ Família de fonte: **Inter** (Google Fonts, pesos 400, 600 e 700, carregada no `
 - `--card-min-width`: 15.5rem (248px), largura mínima de um card na grade
 - `--card-image-height`: 12.5rem (200px), altura da imagem do card de produto
 - `--border-width`: 1px, espessura de todas as bordas
+- `--form-max-width`: 30rem (480px), largura máxima dos formulários de conta (entrar, cadastro)
 
 ## 5. Raios e sombras
 
