@@ -3,7 +3,7 @@ id: 25b-front-account
 title: "front: minha conta (parte 2 da issue 25)"
 depends: [25a-front-signin-register]
 provides: [frontend/src/pages/Account.tsx, frontend/src/auth/AuthContext.tsx]
-context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, frontend/src/auth/AuthContext.tsx, frontend/src/pages/Register.tsx, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_25b_account.test.tsx]
+context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, frontend/src/auth/AuthContext.tsx, frontend/src/pages/Account.tsx, frontend/src/pages/Register.tsx, backend/app/modules/users/schemas.py, frontend/src/__tests__/issue_25b_account.test.tsx]
 test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_25a_signin_register.test.tsx src/__tests__/issue_25b_account.test.tsx src/__tests__/issue_24a_layout_home.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
 max_iters: 4
 ---
@@ -13,6 +13,10 @@ Os testes estão em `frontend/src/__tests__/issue_25b_account.test.tsx` e **não
 também rodam e precisam continuar passando. Esta issue troca o placeholder de
 `src/pages/Account.tsx` e acrescenta `refreshUser()` ao `AuthContext`. Siga o padrão do
 `Register.tsx` (formulário, erros de campo, `noValidate`).
+
+**Como escrever os arquivos:** o `Account.tsx` atual é só um placeholder de 5 linhas: reescreva-o
+**inteiro** com `### FILE` (e crie o `Account.css` também com `### FILE`). No `AuthContext.tsx`,
+use `### EDIT`. Um bloco `### FILE` nunca leva marcadores `<<<<<<< SEARCH` / `>>>>>>> REPLACE`.
 
 A interface é em **inglês**: os textos entre aspas abaixo são exatos (os testes procuram por eles).
 
