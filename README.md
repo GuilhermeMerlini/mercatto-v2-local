@@ -138,9 +138,11 @@ python harness/run.py 1 --model qwen3.6:35b       # issue 01 (aceita 1, 01 ou o 
 
 O ciclo de cada issue:
 
-1. **Rodar**: `python harness/run.py N --model <modelo>`.
-2. **Revisar**: `git diff`. Passar nos testes não garante código bom; leia o que o modelo fez.
-3. **Se passou**: `git add -A && git commit -m "Issue NN (<modelo>, K tentativas)" && git push`.
+1. **Rodar**: `python harness/run.py N --model <modelo>` (para uma parte, como a 26a, passe o
+   caminho: `python harness/run.py docs/issues/26a-front-product.md`).
+2. **Revisar**: `git diff`. Passar nos testes não garante código bom; leia o que o modelo fez e
+   corrija à mão o que for preciso.
+3. **Se passou**: faça o commit como descrito em [Commits e PR](#commits-e-pr).
 4. **Se não passou**, há três caminhos:
    - `python harness/run.py N --continue`: retoma a partir dos arquivos e do erro da última
      tentativa, sem apagar nada;
@@ -160,6 +162,41 @@ Variáveis de ambiente do harness:
 Cada execução acrescenta uma linha a `docs/results.jsonl`, com issue, modelo, tentativas, se
 passou, tokens, tamanho do prompt e tempo. **Esse arquivo está no `.gitignore`**: copie-o para
 fora do servidor antes de apagar o clone, ou ele se perde.
+
+---
+
+## Commits e PR
+
+Cada issue tem uma branch própria a partir da `main` (`feat/NN-<slug>`, ex.:
+`feat/26-front-product`) e vira um PR. As mensagens de commit são em português, no formato
+`tipo(escopo opcional): resumo`:
+
+| Commit | Exemplo |
+| --- | --- |
+| Testes da issue (antes de rodar o harness) | `test: adiciona os testes da issue 26a` |
+| Divisão de uma issue em partes | `chore: divide a issue 25 em 25a e 25b` |
+| Implementação de uma issue ou parte | `feat(front): página do produto (issue 26a)` |
+| Correção fora de uma issue | `fix: remove classe sem CSS das estrelas vazias do StarRating` |
+| Mudança no harness | `chore(harness): aplica como EDIT o bloco FILE que vem com marcadores SEARCH/REPLACE` |
+
+O commit da implementação diz no corpo que o código veio da LLM local e lista, um por linha,
+o que foi corrigido à mão e por quê:
+
+```
+feat(front): página do produto (issue 26a)
+
+Implementação gerada pela LLM local, com estas correções feitas na mão:
+- erro fora do 404 mostra um ErrorMessage, em vez de "Product not found"
+- `min-height: 100vh` removido da página, que empurrava o rodapé
+```
+
+O modelo, as tentativas e os tokens não vão no commit: ficam no `docs/results.jsonl` e na
+tabela "Resultado do harness" do PR.
+
+A descrição do PR segue o modelo em
+[`.github/pull_request_template.md`](.github/pull_request_template.md), que o GitHub preenche
+sozinho ao abrir o PR. Ela termina com `Closes #NN`. Se o PR alterar algum teste existente,
+ponha a label `edita-testes`; sem ela, o CI reprova o PR.
 
 ---
 
