@@ -29,6 +29,11 @@
   border-color: var(--color-error);
 }
 
+.input-hint {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-light);
+}
+
 .input-error {
   font-size: var(--font-size-caption);
   color: var(--color-error);

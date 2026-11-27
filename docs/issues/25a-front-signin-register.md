@@ -16,6 +16,11 @@ que repassam o `ApiError` em caso de erro) e os componentes de `components/ui`.
 
 A interface é em **inglês**: os textos entre aspas abaixo são exatos (os testes procuram por eles).
 
+**Estrutura das páginas:** o `App.tsx` importa cada página como **default**
+(`import SignIn from "./pages/SignIn"`), então o arquivo termina em `export default`. O `Layout`
+já renderiza o `<main>` em volta da página: a raiz da página é uma `<div>`, **nunca** outro `<main>`
+(dois `<main>` quebram os testes).
+
 **Estilos:** não há Tailwind nem nenhuma biblioteca de CSS no projeto. Cada componente ou página
 tem o seu `.css`, importado no `.tsx`, com classes próprias que usam só `var(--token)` de
 `tokens.css` (veja `Button.tsx` e `Button.css`). Um teste da 24a, que continua rodando, confere que **toda `className` usada em
@@ -24,7 +29,7 @@ tem o seu `.css`, importado no `.tsx`, com classes próprias que usam só `var(-
 ## API dos componentes de `components/ui` (importe de `../components/ui`)
 
 - `Button`: props de `<button>` + `variant?: "primary" | "secondary" | "ghost"`, `loading?: boolean`.
-- `Input` / `Select`: props de `<input>` / `<select>` + `label: string` (obrigatório), `error?: string`.
+- `Input` / `Select`: props de `<input>` / `<select>` + `label: string` (obrigatório), `error?: string`; o `Input` também aceita `hint?: string` (dica fixa abaixo do campo).
 - `Card`: `as?: "div" | "article" | "section"`, `children`.
 - `Price`: `cents: number`, `listCents?: number | null`.
 - `StarRating`: `value: number`, `count?: number`.

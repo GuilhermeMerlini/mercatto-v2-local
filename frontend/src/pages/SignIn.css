@@ -1,0 +1,27 @@
+.sign-in {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.sign-in__card {
+  width: 100%;
+  max-width: var(--form-max-width);
+  padding: var(--spacing-lg);
+}
+
+.sign-in__title {
+  margin: 0 0 var(--spacing-lg);
+}
+
+.sign-in__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.sign-in__footer {
+  margin: var(--spacing-lg) 0 0;
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-light);
+}
