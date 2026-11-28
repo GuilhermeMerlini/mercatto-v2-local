@@ -198,12 +198,11 @@ describe("disponibilidade", () => {
 // ---------- buy-box ----------
 
 describe("buy-box", () => {
-  it("tem um contêiner vazio data-slot=buy-box para a issue 27", async () => {
+  it("tem um único contêiner data-slot=buy-box, que a issue 27 preenche", async () => {
     renderProduct();
     await loaded();
     const slots = screen.getByRole("main").querySelectorAll('[data-slot="buy-box"]');
     expect(slots).toHaveLength(1);
     expect(slots[0].tagName).toBe("DIV");
-    expect(slots[0]).toBeEmptyDOMElement();
   });
 });

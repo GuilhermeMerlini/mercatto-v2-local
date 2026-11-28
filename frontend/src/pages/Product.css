@@ -81,3 +81,18 @@
   color: var(--color-error);
   font-weight: var(--font-weight-semibold);
 }
+
+.product-added-to-cart {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: var(--color-success);
+  color: var(--color-on-primary);
+  border-radius: var(--radius-small);
+  font-weight: var(--font-weight-semibold);
+}
+
+.product-added-to-cart__link {
+  margin-left: var(--spacing-xs);
+  color: var(--color-on-primary);
+  text-decoration: underline;
+}

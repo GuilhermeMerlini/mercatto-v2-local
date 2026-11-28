@@ -68,6 +68,7 @@ Família de fonte: **Inter** (Google Fonts, pesos 400, 600 e 700, carregada no `
 - `--card-image-height`: 12.5rem (200px), altura da imagem do card de produto
 - `--border-width`: 1px, espessura de todas as bordas
 - `--form-max-width`: 30rem (480px), largura máxima dos formulários de conta (entrar, cadastro)
+- `--cart-image-size`: 5rem (80px), lado da miniatura de cada item do carrinho
 
 ## 5. Raios e sombras
 

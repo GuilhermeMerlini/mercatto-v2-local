@@ -60,6 +60,7 @@
   --card-image-height: 12.5rem;
   --border-width: 1px;
   --form-max-width: 30rem;
+  --cart-image-size: 5rem;
 
   /* Foco */
   --focus-outline: 2px solid var(--color-primary);

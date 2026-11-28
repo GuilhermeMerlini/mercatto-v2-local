@@ -51,3 +51,17 @@
 .header__link:hover {
   text-decoration: underline;
 }
+
+.header__cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5em;
+  margin-left: var(--spacing-xs);
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-large);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+}

@@ -14,27 +14,30 @@ import Order from "./pages/Order";
 import Account from "./pages/Account";
 import SellerPanel from "./pages/SellerPanel";
 import NotFound from "./pages/NotFound";
+import { CartProvider } from "./cart/CartContext";
 
 export default function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/products/:id" element={<Product />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/register" element={<Register />} />
+      <CartProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/products/:id" element={<Product />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/register" element={<Register />} />
 
-          <Route path="/cart" element={<RequireAuth><Cart /></RequireAuth>} />
-          <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
-          <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
-          <Route path="/orders/:id" element={<RequireAuth><Order /></RequireAuth>} />
-          <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
-          <Route path="/seller" element={<RequireAuth role="SELLER"><SellerPanel /></RequireAuth>} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
+            <Route path="/cart" element={<RequireAuth><Cart /></RequireAuth>} />
+            <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
+            <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
+            <Route path="/orders/:id" element={<RequireAuth><Order /></RequireAuth>} />
+            <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
+            <Route path="/seller" element={<RequireAuth role="SELLER"><SellerPanel /></RequireAuth>} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </CartProvider>
     </AuthProvider>
   );
 }
