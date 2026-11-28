@@ -5,7 +5,7 @@ depends: [27-front-cart]
 provides: [frontend/src/components/orders/AddressFields.tsx]
 context_files: [frontend/DESIGN.md, frontend/src/styles/tokens.css, backend/app/modules/orders/schemas.py, frontend/src/__tests__/issue_28_checkout.test.tsx]
 test_cmd: python harness/export_openapi.py > frontend/openapi.json && cd frontend && npm install --no-audit --no-fund --silent && npm run gen:api && { DEBUG_PRINT_LIMIT=1500 npx vitest run src/__tests__/issue_28_checkout.test.tsx; t=$?; npm run build; b=$?; [ $t -eq 0 ] && [ $b -eq 0 ]; }
-max_iters: 5
+max_iters: 4
 ---
 # front: checkout e confirmação do pedido
 
