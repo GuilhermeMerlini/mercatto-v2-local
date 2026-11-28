@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
+import { useCart } from "../../cart/CartContext";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import "./Header.css";
 
 export function Header() {
   const { user, logout } = useAuth();
+  const { cart } = useCart();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -16,6 +18,9 @@ export function Header() {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
+
+  const cartCount = cart?.item_count ?? 0;
+  const cartLabel = `Cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`;
 
   return (
     <header className="header">
@@ -34,6 +39,10 @@ export function Header() {
       </form>
 
       <div className="header__user">
+        <Link to="/cart" className="header__link" aria-label={cartLabel}>
+          Cart
+          <span className="header__cart-count">{cartCount}</span>
+        </Link>
         {user ? (
           <>
             <span className="header__user-name">{user.name}</span>

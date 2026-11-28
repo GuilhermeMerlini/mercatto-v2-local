@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { api, ApiError } from "../api/client";
 import type { Product } from "../api/types";
 import { Card } from "../components/ui/Card";
@@ -8,7 +8,67 @@ import { StarRating } from "../components/ui/StarRating";
 import { Spinner } from "../components/ui/Spinner";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { EmptyState } from "../components/ui/EmptyState";
+import { Button } from "../components/ui/Button";
+import { Select } from "../components/ui/Select";
+import { useAuth } from "../auth/AuthContext";
+import { useCart } from "../cart/CartContext";
 import "./Product.css";
+
+/** Quantidade e "Add to cart". Fica em componente próprio, com key, para zerar ao trocar de produto. */
+function BuyBox({ product }: { product: Product }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addItem } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const inStock = product.stock > 0;
+  const options = Array.from({ length: Math.min(10, product.stock) }, (_, i) => i + 1);
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      navigate(`/signin?next=/products/${product.id}`);
+      return;
+    }
+    setAdding(true);
+    setError(null);
+    try {
+      await addItem(product.id, quantity);
+      setAdded(true);
+    } catch (err) {
+      setAdded(false);
+      setError(err instanceof ApiError ? err.detail : "Could not add to cart");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  return (
+    <>
+      {inStock && (
+        <Select label="Quantity" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}>
+          {options.map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </Select>
+      )}
+      <Button variant="primary" onClick={handleAddToCart} disabled={!inStock} loading={adding}>
+        Add to cart
+      </Button>
+      {added && (
+        <div role="status" className="product-added-to-cart">
+          Added to cart
+          <Link to="/cart" className="product-added-to-cart__link">View cart</Link>
+        </div>
+      )}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+    </>
+  );
+}
 
 const Product: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -113,7 +173,9 @@ const Product: FC = () => {
             </>
           )}
         </div>
-        <div data-slot="buy-box" />
+        <div data-slot="buy-box">
+          <BuyBox key={product.id} product={product} />
+        </div>
       </Card>
     </div>
   );

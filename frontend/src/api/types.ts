@@ -5,3 +5,5 @@ export type LoginResponse = components["schemas"]["LoginOut"];
 export type Product = components["schemas"]["ProductOut"];
 export type ProductPage = components["schemas"]["Page_ProductOut_"];
 export type SearchResult = components["schemas"]["SearchOut"];
+export type Cart = components["schemas"]["CartView"];
+export type CartItem = components["schemas"]["CartItemView"];
